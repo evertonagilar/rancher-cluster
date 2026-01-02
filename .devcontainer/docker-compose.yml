@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  control:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+    volumes:
+      - ..:/workspaces/rancher-cluster:cached
+    networks:
+      - cluster-net
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+  node-01:
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    hostname: node-01
+    networks:
+      - cluster-net
+    privileged: true
+
+  node-02:
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    hostname: node-02
+    networks:
+      - cluster-net
+    privileged: true
+
+  node-03:
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    hostname: node-03
+    networks:
+      - cluster-net
+    privileged: true
+
+  node-04:
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    hostname: node-04
+    networks:
+      - cluster-net
+    privileged: true
+
+networks:
+  cluster-net:
+    driver: bridge

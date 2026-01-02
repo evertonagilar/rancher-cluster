@@ -1,0 +1,20 @@
+{
+    "name": "Rancher Cluster Dev Environment",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "control",
+    "workspaceFolder": "/workspaces/rancher-cluster",
+    "features": {
+        "ghcr.io/devcontainers/features/ansible:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-kubernetes-tools.vscode-kubernetes-tools",
+                "redhat.ansible",
+                "ms-azuretools.vscode-docker"
+            ]
+        }
+    },
+    "remoteUser": "vscode"
+}
