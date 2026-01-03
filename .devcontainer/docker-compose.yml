@@ -1,13 +1,13 @@
-version: '3.8'
 
 services:
   control:
-    image: mcr.microsoft.com/devcontainers/base:ubuntu-22.04
+    build:
+      context: .
+      dockerfile: control.Dockerfile
     volumes:
       - ..:/workspaces/rancher-cluster:cached
     networks:
       - cluster-net
-    command: /bin/sh -c "while sleep 1000; do :; done"
 
   node-01:
     build:
@@ -41,6 +41,15 @@ services:
       context: .
       dockerfile: node.Dockerfile
     hostname: node-04
+    networks:
+      - cluster-net
+    privileged: true
+
+  rancher-server:
+    build:
+      context: .
+      dockerfile: node.Dockerfile
+    hostname: rancher-server
     networks:
       - cluster-net
     privileged: true

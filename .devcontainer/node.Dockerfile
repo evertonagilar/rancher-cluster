@@ -23,11 +23,16 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 # SSH login fix. Otherwise user is kicked off after login
 RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
 
-# Add a user for ansible/rancher operations
+# Add users for ansible/rancher operations
 RUN useradd -m -s /bin/bash rancher && \
     echo "rancher:rancher" | chpasswd && \
     adduser rancher sudo && \
     echo "rancher ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN useradd -m -s /bin/bash evertonagilar && \
+    echo "evertonagilar:rancher" | chpasswd && \
+    adduser evertonagilar sudo && \
+    echo "evertonagilar ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 EXPOSE 22
 

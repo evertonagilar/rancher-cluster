@@ -4,8 +4,9 @@
 SSH_DIR="$HOME/.ssh"
 KEY_FILE="$SSH_DIR/id_rsa"
 NODES=("node-01" "node-02" "node-03" "node-04")
-USER="rancher"
-PASS="rancher"
+DEFAULT_USER="rancher"
+DEFAULT_PASS="rancher"
+NEW_USER="evertonagilar"
 
 # Create SSH directory if it doesn't exist
 mkdir -p "$SSH_DIR"
@@ -17,19 +18,28 @@ if [ ! -f "$KEY_FILE" ]; then
     ssh-keygen -t rsa -b 4096 -f "$KEY_FILE" -N ""
 fi
 
-# Function to copy ID using sshpass (likely needed if not using keys yet)
-# Note: sshpass might need to be installed in the control container
+# Function to setup nodes
 for node in "${NODES[@]}"; do
-    echo "Distributing key to $node..."
-    # We use -o StrictHostKeyChecking=no to avoid prompts
-    ssh-keyscan -H "$node" >> "$SSH_DIR/known_hosts"
+    echo "----------------------------------------"
+    echo "Processing $node..."
     
-    # Try to copy ID. This assumes sshpass is available or manual password entry if not.
-    # For a smoother experience, we can suggest the user runs this inside the control container.
+    # 1. Clean and scan host keys
     ssh-keygen -f "$SSH_DIR/known_hosts" -R "$node" &> /dev/null
-    ssh-keyscan -H "$node" >> "$SSH_DIR/known_hosts"
+    ssh-keyscan -H "$node" >> "$SSH_DIR/known_hosts" 2>/dev/null
     
-    echo "Tip: Run 'ssh-copy-id $USER@$node' and use password '$PASS'"
+    # 2. Distribute key to rancher user
+    echo "Distributing SSH key to $DEFAULT_USER@$node..."
+    SSHPASS="$DEFAULT_PASS" sshpass -e ssh-copy-id -o StrictHostKeyChecking=no "$DEFAULT_USER@$node"
+    
+    # 3. Distribute key to evertonagilar user
+    echo "Distributing SSH key to $NEW_USER@$node..."
+    SSHPASS="$DEFAULT_PASS" sshpass -e ssh-copy-id -o StrictHostKeyChecking=no "$NEW_USER@$node"
+    
+    echo "Finished $node."
 done
 
-echo "SSH Setup script completed."
+
+echo "----------------------------------------"
+echo "SSH Setup and user creation completed."
+echo "You can now login with: ssh $NEW_USER@node-01 (or any other node)"
+
