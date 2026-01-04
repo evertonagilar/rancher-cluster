@@ -1,9 +1,0 @@
----
-- name: "Update /etc/hosts with Rancher DNS entry"
-  ansible.builtin.lineinfile:
-    path: /etc/hosts
-    regexp: "^.*{{ rancher_hostname | regexp_escape }}$"
-    line: "{{ rancher_ip }} {{ rancher_hostname }}"
-    state: present
-    create: true
-    mode: '0644'

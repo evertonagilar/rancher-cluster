@@ -7,5 +7,14 @@
       - iputils-ping
       - iptables-persistent
       - vim
+      - python3-kubernetes
+      - python3-pip
+      - socat
+      - conntrack
+      - ipset
+      - open-iscsi
+      - nfs-common
+      - jq
+      - net-tools
     update_cache: true
     state: present

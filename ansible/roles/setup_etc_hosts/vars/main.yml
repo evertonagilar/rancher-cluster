@@ -1,0 +1,6 @@
+---
+dns_entries:
+  - domain: "rancher.arq.unb.br"
+    ip: "192.168.56.101"
+  - domain: "vault.arq.unb.br"
+    ip: "192.168.56.101"
