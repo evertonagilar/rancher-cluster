@@ -1,4 +1,4 @@
-# Rancher Cluster Automation 🚀
+# Rancher Cluster em K3S 🚀
 
 Este projeto automatiza a criação e configuração de um cluster Kubernetes (K3s) e a instalação do Rancher Server, utilizando uma arquitetura modular baseada em **Ansible Roles**.
 
