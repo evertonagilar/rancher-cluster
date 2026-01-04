@@ -31,16 +31,6 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
 .
 ├── ansible/
 │   ├── roles/                 # Roles modulares
-│   │   ├── cert_manager_install
-│   │   ├── docker_install
-│   │   ├── helm_install
-│   │   ├── k3s_install
-│   │   ├── prepare_vm
-│   │   ├── rancher_install
-│   │   ├── setup_hosts
-│   │   ├── setup_kubeconfig
-│   │   ├── setup_kubectl_autocomplete
-│   │   └── setup_users
 │   └── *.yml                  # Playbooks principais
 ├── docs/                      # Manuais de instalação detalhados
 ├── Vagrantfile                # Configuração da VM
