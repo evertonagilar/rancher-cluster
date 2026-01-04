@@ -101,5 +101,5 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
 
 Para guias passo-a-passo detalhados, consulte a pasta `docs/`:
 - [Manual para VM (Vagrant)](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server-vm.md)
-- [Manual para Container (Docker)](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server.md)
+- [Manual para Container (Docker)](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server-docker.md)
 
