@@ -16,7 +16,7 @@ vagrant ssh
 > Você também pode utilizar o Ansible para automatizar toda a configuração após subir a VM.
 
 > [!NOTE]
-> Por padrão, o Vagrant cria a primeira interface (`eth0`) como NAT para acesso à internet. A segunda interface (`eth1`) é geralmente a rede privada/pública configurada no `Vagrantfile`.
+> Por padrão, o Vagrant cria a primeira interface (`enp0s3`) como NAT para acesso à internet. A segunda interface (`enp0s8`) é geralmente a rede privada/pública configurada no `Vagrantfile`.
 
 ## 2. Preparação do Sistema
 
