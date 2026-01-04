@@ -8,8 +8,12 @@ Utilize o `Vagrantfile` configurado para subir a máquina.
 
 ```bash
 vagrant up
+# Para acessar a VM manualmente
 vagrant ssh
 ```
+
+> [!TIP]
+> Você também pode utilizar o Ansible para automatizar toda a configuração após subir a VM.
 
 > [!NOTE]
 > Por padrão, o Vagrant cria a primeira interface (`eth0`) como NAT para acesso à internet. A segunda interface (`eth1`) é geralmente a rede privada/pública configurada no `Vagrantfile`.
@@ -20,6 +24,11 @@ Dentro da VM, atualize os pacotes e instale as dependências básicas.
 
 ```bash
 sudo apt update && sudo apt install -y git curl iputils-ping iptables-persistent vim
+```
+
+**Via Ansible:**
+```bash
+ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
 ```
 
 ## 3. Instalação do K3s (Configuração de Rede)
@@ -36,6 +45,11 @@ curl -sfL https://get.k3s.io | sh -s - \
   --flannel-iface=enp0s8 \
   --write-kubeconfig-mode=644 \
   --write-kubeconfig-group=rancher
+```
+
+**Via Ansible:**
+```bash
+ansible-playbook -i hosts.ini ansible/install-k3s-playbook.yml
 ```
 
 ### Verificação
@@ -58,18 +72,30 @@ export KUBECONFIG=~/.kube/config
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 ```
 
+**Via Ansible:**
+```bash
+ansible-playbook -i hosts.ini ansible/install-helm-playbook.yml
+```
+
 ## 5. Instalação do Cert-Manager
 
 ```bash
 helm repo add jetstack https://charts.jetstack.io
 helm repo update
 
+# Instalar CRDs
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.crds.yaml
 
+# Instalar via Helm
 helm install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
   --version v1.13.0
+```
+
+**Via Ansible:**
+```bash
+ansible-playbook -i hosts.ini ansible/install-cert-manager-playbook.yml
 ```
 
 ## 6. Instalação do Rancher
@@ -77,15 +103,28 @@ helm install cert-manager jetstack/cert-manager \
 Substitua `rancher.localhost` pelo hostname desejado se necessário.
 
 ```bash
+# Criar namespace
+kubectl create namespace cattle-system
+
+# Adicionar repositório
 helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
 helm repo update
 
+# Instalação
 helm install rancher rancher-stable/rancher \
   --namespace cattle-system \
-  --create-namespace \
   --set hostname=rancher.arq.unb.br \
-  --set bootstrapPassword=admin
+  --set bootstrapPassword=admin \
+  --set ingress.tls.source=rancher # ou secret se usar certs próprios
 ```
+
+**Via Ansible:**
+```bash
+ansible-playbook -i hosts.ini ansible/install-rancher-playbook.yml
+```
+
+> [!NOTE]
+> O playbook de instalação do Rancher também automatiza a criação do segredo TLS caso você forneça os arquivos de certificado.
 
 ## 7. Acesso ao Dashboard do Host
 

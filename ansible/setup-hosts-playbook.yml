@@ -1,0 +1,13 @@
+---
+- name: Setup hosts file on remote nodes
+  hosts: all
+  become: true
+  roles:
+    - role: setup_hosts
+
+- name: Setup hosts file on local machine (host)
+  hosts: localhost
+  connection: local
+  become: true
+  roles:
+    - role: setup_hosts
