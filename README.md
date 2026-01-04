@@ -65,10 +65,10 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
    
    Como os certificados não são versionados no Git, você precisa criá-los manualmente na pasta `files` das respectivas roles antes da execução:
 
-   - **Rancher:** Copie `arq.unb.br.crt` e `arq.unb.br.key` para:
+   - **Rancher:** Copie o certificado e a chave para:
      `ansible/roles/rancher_install/files/`
    
-   - **Vault:** Copie `arq.unb.br.crt` e `arq.unb.br.key` para:
+   - **Vault:** Copie o certificado e a chave para:
      `ansible/roles/vault/files/`
 
 3. **Preparar a VM:**
