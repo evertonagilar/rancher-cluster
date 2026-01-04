@@ -1,0 +1,90 @@
+---
+- name: Add Rancher Helm repo
+  ansible.builtin.command:
+    cmd: helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+  changed_when: false
+
+- name: Update Helm repos
+  ansible.builtin.command:
+    cmd: helm repo update
+  changed_when: false
+
+- name: Create cattle-system namespace
+  ansible.builtin.command:
+    cmd: kubectl create namespace cattle-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: create_ns
+  failed_when: false
+  changed_when: "'created' in create_ns.stdout"
+
+- name: Copy certificate to target
+  ansible.builtin.copy:
+    src: "{{ cert_file }}"
+    dest: "{{ temp_cert_path }}"
+    mode: '0600'
+
+- name: Copy private key to target
+  ansible.builtin.copy:
+    src: "{{ key_file }}"
+    dest: "{{ temp_key_path }}"
+    mode: '0600'
+
+- name: Check if Rancher TLS secret exists
+  ansible.builtin.command:
+    cmd: "kubectl get secret {{ rancher_secret_name }} -n cattle-system"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: secret_check
+  failed_when: false
+  changed_when: false
+
+- name: Create Rancher TLS secret
+  ansible.builtin.command:
+    cmd: >
+      kubectl create secret tls {{ rancher_secret_name }}
+      --cert={{ temp_cert_path }}
+      --key={{ temp_key_path }}
+      -n cattle-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: secret_check.rc != 0
+  changed_when: true
+
+- name: Check if Rancher is installed
+  ansible.builtin.command:
+    cmd: helm status rancher -n cattle-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: rancher_status
+  failed_when: false
+  changed_when: false
+
+- name: Install Rancher via Helm
+  ansible.builtin.command:
+    cmd: >
+      helm install rancher rancher-stable/rancher
+      --namespace cattle-system
+      --set hostname={{ rancher_hostname }}
+      --set bootstrapPassword=admin
+      --set ingress.tls.source=secret
+      --set ingress.tls.secretName={{ rancher_secret_name }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: rancher_status.rc != 0
+  changed_when: true
+
+- name: Cleanup temporary certificate files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ temp_cert_path }}"
+    - "{{ temp_key_path }}"
+
+- name: Wait for Rancher pods to be ready
+  ansible.builtin.command:
+    cmd: kubectl wait --for=condition=Ready pods --all -n cattle-system --timeout=600s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false

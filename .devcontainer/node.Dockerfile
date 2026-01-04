@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM antmelekhin/ubuntu-systemd:22.04
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     vim \
     net-tools \
     iputils-ping \
+    iproute2 \
     software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
@@ -36,4 +37,4 @@ RUN useradd -m -s /bin/bash evertonagilar && \
 
 EXPOSE 22
 
-CMD ["/usr/sbin/sshd", "-D"]
+# Systemd is the entrypoint in the base image

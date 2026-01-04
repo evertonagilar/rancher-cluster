@@ -1,0 +1,8 @@
+---
+target_users:
+  - name: evertonagilar
+    home: /home/evertonagilar
+  - name: vagrant
+    home: /home/vagrant
+  - name: root
+    home: /root

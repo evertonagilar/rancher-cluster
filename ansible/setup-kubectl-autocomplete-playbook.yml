@@ -1,0 +1,6 @@
+---
+- name: Setup kubectl autocomplete
+  hosts: all
+  become: true
+  roles:
+    - role: setup_kubectl_autocomplete

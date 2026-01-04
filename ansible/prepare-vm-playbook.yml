@@ -1,0 +1,6 @@
+---
+- name: Prepare VM for Rancher/K3s Installation
+  hosts: all
+  become: true
+  roles:
+    - role: prepare_vm

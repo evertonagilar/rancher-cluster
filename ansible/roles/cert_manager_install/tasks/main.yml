@@ -1,0 +1,52 @@
+---
+- name: Download cert-manager CRDs
+  ansible.builtin.get_url:
+    url: "https://github.com/cert-manager/cert-manager/releases/download/{{ cert_manager_version }}/cert-manager.crds.yaml"
+    dest: /tmp/cert-manager.crds.yaml
+    mode: '0644'
+
+- name: Apply cert-manager CRDs
+  ansible.builtin.command:
+    cmd: "kubectl apply -f /tmp/cert-manager.crds.yaml"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: apply_crds
+  changed_when: "'created' in apply_crds.stdout or 'configured' in apply_crds.stdout"
+
+- name: Add Jetstack Helm repo
+  ansible.builtin.command:
+    cmd: helm repo add jetstack https://charts.jetstack.io
+  changed_when: false
+
+- name: Update Helm repos
+  ansible.builtin.command:
+    cmd: helm repo update
+  changed_when: false
+
+- name: Check if cert-manager is installed
+  ansible.builtin.command:
+    cmd: helm status cert-manager -n cert-manager
+  register: cert_manager_status
+  failed_when: false
+  changed_when: false
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
+- name: Install Cert-Manager via Helm
+  ansible.builtin.command:
+    cmd: >
+      helm install cert-manager jetstack/cert-manager
+      --namespace cert-manager
+      --create-namespace
+      --version {{ cert_manager_version }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: cert_manager_status.rc != 0
+  changed_when: true
+
+- name: Wait for cert-manager pods to be ready
+  ansible.builtin.command:
+    cmd: kubectl wait --for=condition=Ready pods --all -n cert-manager --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false

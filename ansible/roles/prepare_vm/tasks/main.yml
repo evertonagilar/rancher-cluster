@@ -1,0 +1,11 @@
+---
+- name: Update apt cache and install base packages
+  ansible.builtin.apt:
+    name:
+      - git
+      - curl
+      - iputils-ping
+      - iptables-persistent
+      - vim
+    update_cache: true
+    state: present

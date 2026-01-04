@@ -1,0 +1,7 @@
+---
+- name: Install Rancher
+  hosts: nodes
+  run_once: true
+  become: true
+  roles:
+    - role: rancher_install

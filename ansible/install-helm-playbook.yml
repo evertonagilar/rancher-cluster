@@ -1,0 +1,6 @@
+---
+- name: Install Helm
+  hosts: all
+  become: true
+  roles:
+    - role: helm_install

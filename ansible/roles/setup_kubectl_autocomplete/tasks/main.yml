@@ -1,0 +1,56 @@
+---
+- name: Install bash-completion
+  ansible.builtin.apt:
+    name: bash-completion
+    state: present
+    update_cache: true
+
+- name: Configure kubectl bash completion
+  ansible.builtin.lineinfile:
+    path: "{{ item.home }}/.bashrc"
+    line: "source <(kubectl completion bash)"
+    create: true
+    owner: "{{ item.name }}"
+    group: "{{ item.name if item.name != 'root' else 'root' }}"
+    mode: '0644'
+  loop: "{{ target_users }}"
+
+- name: Add kubectl alias 'k' to bashrc
+  ansible.builtin.lineinfile:
+    path: "{{ item.home }}/.bashrc"
+    line: "alias k=kubectl"
+    create: true
+    owner: "{{ item.name }}"
+    group: "{{ item.name if item.name != 'root' else 'root' }}"
+    mode: '0644'
+  loop: "{{ target_users }}"
+
+- name: Add 'k' completion to bashrc
+  ansible.builtin.lineinfile:
+    path: "{{ item.home }}/.bashrc"
+    line: "complete -o default -F __start_kubectl k"
+    create: true
+    owner: "{{ item.name }}"
+    group: "{{ item.name if item.name != 'root' else 'root' }}"
+    mode: '0644'
+  loop: "{{ target_users }}"
+
+- name: Configure kubectl zsh completion
+  ansible.builtin.lineinfile:
+    path: "{{ item.home }}/.zshrc"
+    line: "source <(kubectl completion zsh)"
+    create: true
+    owner: "{{ item.name }}"
+    group: "{{ item.name if item.name != 'root' else 'root' }}"
+    mode: '0644'
+  loop: "{{ target_users }}"
+
+- name: Add kubectl alias 'k' to zshrc
+  ansible.builtin.lineinfile:
+    path: "{{ item.home }}/.zshrc"
+    line: "alias k=kubectl"
+    create: true
+    owner: "{{ item.name }}"
+    group: "{{ item.name if item.name != 'root' else 'root' }}"
+    mode: '0644'
+  loop: "{{ target_users }}"

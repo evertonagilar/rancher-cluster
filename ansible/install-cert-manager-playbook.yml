@@ -1,0 +1,6 @@
+---
+- name: Install Cert-Manager
+  hosts: nodes
+  become: true
+  roles:
+    - role: cert_manager_install

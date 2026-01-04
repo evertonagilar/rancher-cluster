@@ -1,0 +1,7 @@
+---
+- name: Install K3s on VM
+  hosts: nodes
+  run_once: true
+  become: true
+  roles:
+    - role: k3s_install

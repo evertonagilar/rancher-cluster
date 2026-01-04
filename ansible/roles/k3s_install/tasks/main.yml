@@ -1,0 +1,19 @@
+---
+- name: Download K3s installation script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/install_k3s.sh
+    mode: '0755'
+
+- name: Run K3s installation script
+  ansible.builtin.command:
+    cmd: >
+      /tmp/install_k3s.sh
+      --node-ip={{ node_ip }}
+      --advertise-address={{ node_ip }}
+      --bind-address={{ node_ip }}
+      --write-kubeconfig-group=rancher
+      --write-kubeconfig-mode=644
+      --flannel-iface={{ flannel_iface }}
+  args:
+    creates: /usr/local/bin/k3s

@@ -1,0 +1,18 @@
+# Vagrant
+.vagrant/
+
+# Certificates and Keys
+*.crt
+*.key
+*.pem
+*.pfx
+*.csr
+*.cer
+*.p12
+
+# Ansible Retry files
+*.retry
+
+# OS generated files
+.DS_Store
+Thumbs.db

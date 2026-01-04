@@ -1,0 +1,23 @@
+---
+- name: Ensure docker group exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: sudo,docker
+    append: true
+    shell: /bin/bash
+    state: present
+  loop: "{{ users_to_setup }}"
+
+- name: Add users to sudoers for passwordless access
+  ansible.builtin.copy:
+    content: "{{ item }} ALL=(ALL) NOPASSWD:ALL"
+    dest: "/etc/sudoers.d/{{ item }}"
+    # Link check on sudoers is good practice
+    mode: '0440'
+    validate: /usr/sbin/visudo -cf %s
+  loop: "{{ users_to_setup }}"

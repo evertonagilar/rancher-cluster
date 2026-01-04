@@ -1,0 +1,3 @@
+---
+node_ip: "192.168.56.101"
+flannel_iface: "enp0s8"
