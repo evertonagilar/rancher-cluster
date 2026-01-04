@@ -8,6 +8,11 @@
 - name: Setup hosts file on local machine (host)
   hosts: localhost
   connection: local
+  gather_facts: false
   become: true
+  vars_prompt:
+    - name: ansible_become_pass
+      prompt: "Confirme que deseja continuar com a credencial?"
+      private: true
   roles:
     - role: setup_etc_hosts

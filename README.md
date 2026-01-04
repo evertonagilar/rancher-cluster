@@ -61,29 +61,39 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
    vagrant up
    ```
 
-2. **Preparar a VM:**
+2. **Configuração de Certificados TLS (Importante ⚠️):**
+   
+   Como os certificados não são versionados no Git, você precisa criá-los manualmente na pasta `files` das respectivas roles antes da execução:
+
+   - **Rancher:** Copie `arq.unb.br.crt` e `arq.unb.br.key` para:
+     `ansible/roles/rancher_install/files/`
+   
+   - **Vault:** Copie `arq.unb.br.crt` e `arq.unb.br.key` para:
+     `ansible/roles/vault/files/`
+
+3. **Preparar a VM:**
    ```bash
    ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
    ```
 
-3. **Instalar Docker e Dependências:**
+4. **Instalar Docker e Dependências:**
    ```bash
    ansible-playbook -i hosts.ini ansible/install-docker-playbook.yml
    ```
 
-4. **Instalar K3s e Helm:**
+5. **Instalar K3s e Helm:**
    ```bash
    ansible-playbook -i hosts.ini ansible/install-k3s-playbook.yml
    ansible-playbook -i hosts.ini ansible/install-helm-playbook.yml
    ```
 
-5. **Instalar Cert-Manager e Rancher:**
+6. **Instalar Cert-Manager e Rancher:**
    ```bash
    ansible-playbook -i hosts.ini ansible/install-cert-manager-playbook.yml
    ansible-playbook -i hosts.ini ansible/install-rancher-playbook.yml
    ```
 
-6. **Configurar Acesso (Opcional):**
+7. **Configurar Acesso (Opcional):**
    ```bash
    # Configura usuários, kubeconfig e autocomplete
    ansible-playbook -i hosts.ini ansible/setup-users-playbook.yml
