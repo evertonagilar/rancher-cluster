@@ -1,0 +1,12 @@
+node-ip: {{ rke2_node_ip }}
+cni: canal
+{% if rke2_type == 'server' %}
+advertise-address: {{ rke2_node_ip }}
+tls-san:
+  - {{ rke2_node_ip }}
+  - {{ ansible_hostname }}
+write-kubeconfig-mode: "0644"
+{% else %}
+server: https://{{ rke2_master_ip }}:9345
+token: {{ rke2_token }}
+{% endif %}

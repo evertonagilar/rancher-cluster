@@ -1,0 +1,6 @@
+---
+- name: Create local users
+  hosts: all
+  become: true
+  roles:
+    - role: create_local_users

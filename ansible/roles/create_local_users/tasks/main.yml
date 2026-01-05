@@ -4,7 +4,7 @@
     name: docker
     state: present
 
-- name: Create users
+- name: Create local users
   ansible.builtin.user:
     name: "{{ item }}"
     groups: sudo,docker

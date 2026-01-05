@@ -1,6 +1,0 @@
----
-- name: Setup standard users
-  hosts: all
-  become: true
-  roles:
-    - role: setup_users
