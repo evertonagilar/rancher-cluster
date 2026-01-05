@@ -1,0 +1,2 @@
+---
+rke2_node_ip: "{{ ansible_host }}"

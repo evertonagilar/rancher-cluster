@@ -1,0 +1,39 @@
+---
+- name: Check if RKE2 is already installed
+  ansible.builtin.stat:
+    path: /var/lib/rancher/rke2
+  register: rke2_installed_check
+
+- name: Default to agent
+  ansible.builtin.set_fact:
+    rke2_type: agent
+  when: rke2_type is not defined
+
+- name: Set type to server if in server group
+  ansible.builtin.set_fact:
+    rke2_type: server
+  when: "'rke2_server' in group_names"
+
+- name: Debug if RKE2 is already installed
+  ansible.builtin.debug:
+    msg: "RKE2 installation detected at /var/lib/rancher/rke2. Skipping installation steps to prevent corruption."
+  when: rke2_installed_check.stat.exists
+
+- name: Download RKE2 script
+  ansible.builtin.get_url:
+    url: https://get.rke2.io
+    dest: /tmp/install_rke2.sh
+    mode: '0755'
+  when: not rke2_installed_check.stat.exists
+
+- name: Include Server tasks
+  ansible.builtin.include_tasks: server.yml
+  when:
+    - rke2_type == 'server'
+    - not rke2_installed_check.stat.exists
+
+- name: Include Agent tasks
+  ansible.builtin.include_tasks: agent.yml
+  when:
+    - rke2_type == 'agent'
+    - not rke2_installed_check.stat.exists

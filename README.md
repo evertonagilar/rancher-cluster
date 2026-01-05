@@ -1,105 +1,46 @@
-# Rancher Cluster em K3S 🚀
+# Projeto Rancher GitOps
 
-Este projeto automatiza a criação e configuração de um cluster Kubernetes (K3s) e a instalação do Rancher Server, utilizando uma arquitetura modular baseada em **Ansible Roles**.
+Este projeto adota uma abordagem **GitOps** para o gerenciamento de infraestrutura Kubernetes. O objetivo é manter o estado desejado da infraestrutura versionado e automatizado.
 
-![Ansible](https://img.shields.io/badge/ansible-%23EE0000.svg?style=for-the-badge&logo=ansible&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![K3s](https://img.shields.io/badge/K3s-FFC107?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Rancher](https://img.shields.io/badge/rancher-%230075A1.svg?style=for-the-badge&logo=rancher&logoColor=white)
-![Vagrant](https://img.shields.io/badge/vagrant-%231563FF.svg?style=for-the-badge&logo=vagrant&logoColor=white)
-![Helm](https://img.shields.io/badge/helm-%230F1689.svg?style=for-the-badge&logo=helm&logoColor=white)
-![Ubuntu](https://img.shields.io/badge/Ubuntu-E94331?style=for-the-badge&logo=ubuntu&logoColor=white)
+## Estrutura do Projeto
 
----
+A organização das pastas reflete a separação de responsabilidades na infraestrutura:
 
-## 📋 Sumário
-- [Arquitetura](#-arquitetura)
-- [Estrutura do Projeto](#-estrutura-do-projeto)
-- [Pré-requisitos](#-pré-requisitos)
-- [Como utilizar](#-como-utilizar)
-- [Documentação Detalhada](#-documentação-detalhada)
+### `/rancher` (Management Plane)
+Contém o código e automação para provisionar o **Rancher Server**.
+- Este é o "cluster de gerenciamento".
+- Geralmente provisionado primeiro.
+- Responsável por orquestrar e gerenciar outros clusters.
+- Tecnologias: K3s, Rancher.
 
----
+### `/rke2` (Downstream Clusters)
+Contém a definição dos clusters de carga de trabalho (Workload Clusters).
+- Clusters provisionados com **RKE2** (Rancher Kubernetes Engine 2).
+- Estes clusters são onde as aplicações de negócio rodam.
+- São importados e gerenciados pelo Rancher Server.
 
-## 🏗 Arquitetura
+### `/docs`
+Documentação técnica e manuis operacionais.
+- Manuais de instalação manual (fallbacks).
+- Guias de arquitetura.
 
-O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**, permitindo modularidade e fácil manutenção. 
+### `/ansible`
+Roles e playbooks que podem ser reutilizados ou que estão em processo de refatoração para as pastas específicas.
 
-## 📂 Estrutura do Projeto
+## Workflow de Provisionamento
 
-```text
-.
-├── ansible/
-│   ├── roles/                 # Roles modulares
-│   └── *.yml                  # Playbooks principais
-├── docs/                      # Manuais de instalação detalhados
-├── Vagrantfile                # Configuração da VM
-├── hosts.ini                  # Inventário do Ansible
-└── README.md                  # Este arquivo
-```
+1.  **Bootstrap do Rancher**:
+    - `cd rancher && vagrant up`
+    - Provisiona o plano de controle central.
+2.  **Provisionamento de Clusters**:
+    - `cd rke2 && vagrant up`
+    - Cria a infraestrutura física/VM para os clusters de aplicação.
+    - Execução dos playbooks para instalar o RKE2.
+3.  **Adoção (Import)**:
+    - O cluster RKE2 é importado no dashboard do Rancher para gerenciamento centralizado (observabilidade, deploy de apps, RBAC).
 
-## 🛠 Pré-requisitos
-
-- **Vagrant** instalado.
-- **VirtualBox** (ou outro provedor suportado).
-- **Ansible** instalado na máquina host.
-
-## 🚀 Como utilizar
-
-1. **Subir a Máquina Virtual:**
-   ```bash
-   vagrant up
-   ```
-
-2. **Configuração de Certificados TLS (Importante ⚠️):**
-   
-   Como os certificados não são versionados no Git, você precisa criá-los manualmente na pasta `files` das respectivas roles antes da execução:
-
-   - **Rancher:** Copie o certificado e a chave para:
-     `ansible/roles/rancher_install/files/`
-   
-   - **Vault:** Copie o certificado e a chave para:
-     `ansible/roles/vault/files/`
-
-3. **Preparar a VM:**
-   ```bash
-   ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
-   ```
-
-4. **Instalar Docker e Dependências:**
-   ```bash
-   ansible-playbook -i hosts.ini ansible/install-docker-playbook.yml
-   ```
-
-5. **Instalar K3s e Helm:**
-   ```bash
-   ansible-playbook -i hosts.ini ansible/install-k3s-playbook.yml
-   ansible-playbook -i hosts.ini ansible/install-helm-playbook.yml
-   ```
-
-6. **Instalar Cert-Manager e Rancher:**
-   ```bash
-   ansible-playbook -i hosts.ini ansible/install-cert-manager-playbook.yml
-   ansible-playbook -i hosts.ini ansible/install-rancher-playbook.yml
-   ```
-
-7. **Configurar Acesso (Opcional):**
-   ```bash
-   # Configura usuários, kubeconfig e autocomplete
-   ansible-playbook -i hosts.ini ansible/setup-users-playbook.yml
-   ansible-playbook -i hosts.ini ansible/setup-kubeconfig-playbook.yml
-   ansible-playbook -i hosts.ini ansible/setup-kubectl-autocomplete-playbook.yml
-
-   # Adiciona entrada DNS no /etc/hosts (Remoto e Local)
-   # Nota: Pode solicitar sua senha sudo local para o localhost
-   ansible-playbook -i hosts.ini ansible/setup-hosts-playbook.yml --ask-become-pass
-   ```
-
----
-
-## 📖 Documentação Detalhada
-
-Para guias passo-a-passo detalhados, consulte a pasta `docs/`:
-- [Manual para VM (Vagrant)](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server-vm.md)
-- [Manual para Container (Docker)  -- Em desenvolvimento](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server-docker.md)
-
+## Requisitos
+- Vagrant
+- VirtualBox
+- Ansible
+- Helm

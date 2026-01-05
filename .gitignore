@@ -1,5 +1,5 @@
 # Vagrant
-.vagrant/
+**/.vagrant/
 
 # Certificates and Keys
 *.crt
@@ -16,3 +16,6 @@
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Tmp files
+*.tmp
