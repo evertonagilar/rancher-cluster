@@ -1,0 +1,5 @@
+---
+authorized_keys_users:
+  - vagrant
+  - ubuntu
+  - rancher

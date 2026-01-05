@@ -1,0 +1,12 @@
+---
+- name: Get all users
+  ansible.builtin.getent:
+    database: passwd
+
+- name: Add my public SSH key to authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ item }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  loop: "{{ authorized_keys_users }}"
+  when: item in ansible_facts.getent_passwd

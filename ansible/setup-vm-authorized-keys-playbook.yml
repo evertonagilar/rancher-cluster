@@ -1,0 +1,6 @@
+---
+- name: Setup VM Authorized Keys
+  hosts: all
+  become: true
+  roles:
+    - setup_vm_authorized_keys

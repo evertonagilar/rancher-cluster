@@ -1,18 +1,18 @@
 ---
-- name: Setup hosts file on remote nodes
+- name: Setup /etc/hosts file on remote nodes
   hosts: all
   become: true
   roles:
     - role: setup_etc_hosts
 
-- name: Setup hosts file on local machine (host)
+- name: Setup /etc/hosts file on host
   hosts: localhost
   connection: local
   gather_facts: false
   become: true
   vars_prompt:
     - name: ansible_become_pass
-      prompt: "Confirme que deseja continuar com a credencial?"
+      prompt: "Confirme que deseja fazer o ajuste?"
       private: true
   roles:
     - role: setup_etc_hosts
