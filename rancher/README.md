@@ -25,19 +25,6 @@ Este projeto automatiza a criação e configuração de um cluster Kubernetes (K
 
 O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**, permitindo modularidade e fácil manutenção. 
 
-## 📂 Estrutura do Projeto
-
-```text
-.
-├── ansible/
-│   ├── roles/                 # Roles modulares
-│   └── *.yml                  # Playbooks principais
-├── docs/                      # Manuais de instalação detalhados
-├── Vagrantfile                # Configuração da VM
-├── hosts.ini                  # Inventário do Ansible
-└── README.md                  # Este arquivo
-```
-
 ## 🛠 Pré-requisitos
 
 - **Vagrant** instalado.
@@ -53,53 +40,71 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
 
 2. **Configuração de Certificados TLS (Importante ⚠️):**
    
-   Como os certificados não são versionados no Git, você precisa criá-los manualmente na pasta `files` das respectivas roles antes da execução:
+   Como os certificados não são versionados no Git, você precisa copiá-los manualmente para as pastas `files` das respectivas roles antes da execução.
 
-   - **Rancher:** Copie o certificado e a chave para:
-     `ansible/roles/rancher_install/files/`
+   ### Rancher
    
-   - **Vault:** Copie o certificado e a chave para:
-     `ansible/roles/vault/files/`
+   Copie os seguintes arquivos para `ansible/roles/rancher_install/files/`:
+   
+   ```
+   ansible/roles/rancher_install/files/
+   ├── cert.crt              # Certificado do servidor (ex: rancher.arq.unb.br)
+   ├── key.key               # Chave privada do certificado
+   ├── intermediate.pem      # Certificado intermediário da CA
+   └── gs_root.pem          # Certificado raiz da CA (GlobalSign)
+   ```
+   
+   > **Nota:** A role cria automaticamente uma cadeia completa de certificados (server → intermediate → root) para garantir a validação correta da cadeia de confiança.
 
-3. **Preparar a VM:**
+3. **Preparar as VMs:**
+
+Execute os playbooks de preparação básica do sistema:
+
    ```bash
-   ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/create-local-users-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-common-software-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/disable-swap-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/config-sysctl-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/load-kernel-modules-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-chrony-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/locale-timezone-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/config-vim-playbook.yml
    ```
 
 4. **Instalar Docker e Dependências:**
    ```bash
-   ansible-playbook -i hosts.ini ansible/install-docker-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-docker-playbook.yml
    ```
 
 5. **Instalar K3s e Helm:**
    ```bash
-   ansible-playbook -i hosts.ini ansible/install-k3s-playbook.yml
-   ansible-playbook -i hosts.ini ansible/install-helm-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-helm-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-k3s-playbook.yml
    ```
 
 6. **Instalar Cert-Manager e Rancher:**
    ```bash
-   ansible-playbook -i hosts.ini ansible/install-cert-manager-playbook.yml
-   ansible-playbook -i hosts.ini ansible/install-rancher-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-cert-manager-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-rancher-playbook.yml
    ```
 
-7. **Configurar Acesso (Opcional):**
+7. **Configuração opcional:**
    ```bash
    # Configura usuários, kubeconfig e autocomplete
-   ansible-playbook -i hosts.ini ansible/setup-users-playbook.yml
-   ansible-playbook -i hosts.ini ansible/setup-kubeconfig-playbook.yml
-   ansible-playbook -i hosts.ini ansible/setup-kubectl-autocomplete-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/setup-kubeconfig-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/setup-kubectl-autocomplete-playbook.yml
 
    # Adiciona entrada DNS no /etc/hosts (Remoto e Local)
    # Nota: Pode solicitar sua senha sudo local para o localhost
-   ansible-playbook -i hosts.ini ansible/setup-hosts-playbook.yml --ask-become-pass
+   ansible-playbook -i hosts.ini ../ansible/setup-hosts-playbook.yml --ask-become-pass
    ```
 
 ---
 
 ## 📖 Documentação Detalhada
 
-Para guias passo-a-passo detalhados, consulte a pasta `docs/`:
+Para guias passo-a-passo com instalação manual, consulte a pasta `docs/`:
 - [Manual para VM (Vagrant)](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server-vm.md)
 - [Manual para Container (Docker)  -- Em desenvolvimento](docs/manual%20instala%C3%A7%C3%A3o%20rancher-server-docker.md)
+- [Troubleshooting Rancher](../docs/troubleshooting-rancher.md)
 

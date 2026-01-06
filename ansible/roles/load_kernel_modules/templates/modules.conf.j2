@@ -1,0 +1,17 @@
+# Kernel modules required for Kubernetes
+# This file ensures modules are loaded at boot time
+
+# Network bridge filtering
+br_netfilter
+
+# Overlay filesystem for container storage
+overlay
+
+# IP Virtual Server for load balancing
+ip_vs
+ip_vs_rr
+ip_vs_wrr
+ip_vs_sh
+
+# Connection tracking
+nf_conntrack

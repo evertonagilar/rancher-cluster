@@ -31,6 +31,8 @@ sudo apt update && sudo apt install -y git curl iputils-ping iptables-persistent
 ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
 ```
 
+> **Nota:** Este playbook utiliza a role `common_software` para instalar pacotes essenciais.
+
 ## 3. Instalação do K3s (Configuração de Rede)
 
 Como a VM possui múltiplas interfaces, é crucial informar ao K3s qual IP e interface utilizar para evitar que ele utilize a rede NAT interna do Vagrant.

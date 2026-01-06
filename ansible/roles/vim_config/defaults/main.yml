@@ -1,0 +1,8 @@
+---
+# Lista de usuários para configurar o vim
+vim_config_users:
+  - root
+  - ubuntu
+  - vagrant
+  - evertonagilar
+  - interno

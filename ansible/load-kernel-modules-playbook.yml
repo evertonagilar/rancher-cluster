@@ -1,0 +1,6 @@
+---
+- name: Load kernel modules
+  hosts: all
+  become: true
+  roles:
+    - role: load_kernel_modules

@@ -1,0 +1,39 @@
+---
+- name: Load kernel modules immediately
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - br_netfilter
+    - overlay
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+    - nf_conntrack
+
+- name: Ensure /etc/modules-load.d directory exists
+  ansible.builtin.file:
+    path: /etc/modules-load.d
+    state: directory
+    mode: '0755'
+
+- name: Configure modules to load at boot
+  ansible.builtin.template:
+    src: modules.conf.j2
+    dest: /etc/modules-load.d/kubernetes.conf
+    mode: '0644'
+
+- name: Verify br_netfilter module is loaded
+  ansible.builtin.command:
+    cmd: lsmod
+  register: lsmod_output
+  changed_when: false
+  failed_when: "'br_netfilter' not in lsmod_output.stdout"
+
+- name: Verify overlay module is loaded
+  ansible.builtin.command:
+    cmd: lsmod
+  register: lsmod_output
+  changed_when: false
+  failed_when: "'overlay' not in lsmod_output.stdout"

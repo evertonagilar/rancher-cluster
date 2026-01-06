@@ -1,0 +1,11 @@
+---
+- name: Cleanup temporary certificate files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ temp_cert_path }}"
+    - "{{ temp_key_path }}"
+    - "{{ temp_intermediate_path }}"
+    - "{{ temp_root_path }}"
+    - "{{ temp_cert_chain_path }}"

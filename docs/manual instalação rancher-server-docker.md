@@ -36,6 +36,8 @@ apt update && apt install -y git curl iputils-ping iptables-persistent vim
 ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
 ```
 
+> **Nota:** Este playbook utiliza a role `common_software` para instalar pacotes essenciais.
+
 ## 3. Instalação do K3s
 
 Instale o K3s configurando-o para uso interno.

@@ -1,0 +1,10 @@
+---
+- name: Add Rancher Helm repo
+  ansible.builtin.command:
+    cmd: helm repo add rancher-stable https://releases.rancher.com/server-charts/stable
+  changed_when: false
+
+- name: Update Helm repos
+  ansible.builtin.command:
+    cmd: helm repo update
+  changed_when: false

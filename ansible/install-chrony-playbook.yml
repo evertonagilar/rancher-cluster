@@ -1,0 +1,6 @@
+---
+- name: Install chrony
+  hosts: all
+  become: true
+  roles:
+    - role: chrony_install

@@ -1,0 +1,7 @@
+---
+- name: Wait for Rancher pods to be ready
+  ansible.builtin.command:
+    cmd: kubectl wait --for=condition=Ready pods --all -n cattle-system --timeout=600s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false

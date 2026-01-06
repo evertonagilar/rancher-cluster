@@ -1,0 +1,30 @@
+---
+- name: Copy certificate to target
+  ansible.builtin.copy:
+    src: "{{ cert_file }}"
+    dest: "{{ temp_cert_path }}"
+    mode: "0600"
+
+- name: Copy private key to target
+  ansible.builtin.copy:
+    src: "{{ key_file }}"
+    dest: "{{ temp_key_path }}"
+    mode: "0600"
+
+- name: Copy intermediate certificate to target
+  ansible.builtin.copy:
+    src: "{{ intermediate_cert_file }}"
+    dest: "{{ temp_intermediate_path }}"
+    mode: "0600"
+
+- name: Copy root certificate to target
+  ansible.builtin.copy:
+    src: "{{ root_cert_file }}"
+    dest: "{{ temp_root_path }}"
+    mode: "0600"
+
+- name: Create certificate chain (server + intermediate + root)
+  ansible.builtin.shell:
+    cmd: |
+      cat {{ temp_cert_path }} {{ temp_intermediate_path }} {{ temp_root_path }} > {{ temp_cert_chain_path }}
+  changed_when: true

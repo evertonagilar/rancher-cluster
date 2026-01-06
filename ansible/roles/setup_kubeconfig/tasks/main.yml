@@ -4,6 +4,25 @@
     path: /etc/rancher/k3s/k3s.yaml
   register: k3s_yaml
 
+- name: Check if rke2.yaml exists
+  ansible.builtin.stat:
+    path: /etc/rancher/rke2/rke2.yaml
+  register: rke2_yaml
+
+- name: Determine cluster type
+  ansible.builtin.set_fact:
+    cluster_type: "{{ 'k3s' if k3s_yaml.stat.exists else ('rke2' if rke2_yaml.stat.exists else 'none') }}"
+    kubeconfig_source: "{{ '/etc/rancher/k3s/k3s.yaml' if k3s_yaml.stat.exists else ('/etc/rancher/rke2/rke2.yaml' if rke2_yaml.stat.exists else '') }}"
+
+- name: Display detected cluster type
+  ansible.builtin.debug:
+    msg: "Detected cluster type: {{ cluster_type }}"
+
+- name: Fail if no cluster configuration found
+  ansible.builtin.fail:
+    msg: "No Kubernetes cluster configuration found. Neither k3s nor rke2 config exists."
+  when: cluster_type == 'none'
+
 - name: Create .kube directory for users
   ansible.builtin.file:
     path: "/home/{{ item }}/.kube"
@@ -23,16 +42,16 @@
     mode: '0700'
   when: "'root' in target_users"
 
-- name: Copy k3s.yaml to users' kubeconfig
+- name: Copy kubeconfig to users' config
   ansible.builtin.copy:
-    src: /etc/rancher/k3s/k3s.yaml
+    src: "{{ kubeconfig_source }}"
     dest: "{{ '/root' if item == 'root' else '/home/' + item }}/.kube/config"
     remote_src: true
     owner: "{{ item }}"
     group: "{{ item }}"
     mode: '0600'
   loop: "{{ target_users }}"
-  when: k3s_yaml.stat.exists
+  when: cluster_type != 'none'
 
 - name: Set KUBECONFIG permission for users (fallback if copy fails or for existing)
   ansible.builtin.file:
@@ -41,4 +60,5 @@
     group: "{{ item }}"
     mode: '0600'
   loop: "{{ target_users }}"
-  when: k3s_yaml.stat.exists
+  when: cluster_type != 'none'
+

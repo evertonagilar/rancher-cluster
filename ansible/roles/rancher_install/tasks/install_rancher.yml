@@ -1,0 +1,36 @@
+---
+- name: Check if Rancher is installed
+  ansible.builtin.command:
+    cmd: helm status rancher -n cattle-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: rancher_status
+  failed_when: false
+  changed_when: false
+
+- name: Create CA certificate secret for privateCA
+  ansible.builtin.command:
+    cmd: >
+      kubectl create secret generic tls-ca
+      --from-file=cacerts.pem={{ temp_cert_chain_path }}
+      --namespace cattle-system
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: rancher_status.rc != 0
+  changed_when: true
+
+- name: Install Rancher via Helm
+  ansible.builtin.command:
+    cmd: >
+      helm install rancher rancher-stable/rancher
+      --namespace cattle-system
+      --set hostname={{ rancher_hostname }}
+      --set bootstrapPassword={{ rancher_admin_password }}
+      --set ingress.tls.source=secret
+      --set ingress.tls.secretName={{ rancher_secret_name }}
+      --set privateCA=true
+      --set agentTLSMode=system-store
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: rancher_status.rc != 0
+  changed_when: true

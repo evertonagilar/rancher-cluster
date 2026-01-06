@@ -1,0 +1,20 @@
+---
+- name: Verificar se os usuários existem
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ item }}"
+    fail_key: false
+  loop: "{{ vim_config_users }}"
+  register: user_check
+
+- name: Configurar o vim para os usuários existentes
+  ansible.builtin.copy:
+    src: vimrc
+    dest: "{{ item.ansible_facts.getent_passwd[item.item][4] }}/.vimrc"
+    mode: '0644'
+    owner: "{{ item.item }}"
+    group: "{{ item.ansible_facts.getent_passwd[item.item][2] }}"
+  loop: "{{ user_check.results }}"
+  when: item.ansible_facts.getent_passwd is defined and item.ansible_facts.getent_passwd[item.item] is defined
+  loop_control:
+    label: "{{ item.item }}"

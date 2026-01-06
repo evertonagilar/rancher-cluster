@@ -1,0 +1,6 @@
+---
+- name: Locale timezone
+  hosts: all
+  become: true
+  roles:
+    - role: locale_timezone

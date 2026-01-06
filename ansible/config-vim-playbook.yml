@@ -1,0 +1,6 @@
+---
+- name: Configurar vim
+  hosts: all
+  become: true
+  roles:
+    - role: vim_config

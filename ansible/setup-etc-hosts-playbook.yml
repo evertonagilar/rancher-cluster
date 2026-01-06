@@ -12,7 +12,7 @@
   become: true
   vars_prompt:
     - name: ansible_become_pass
-      prompt: "Confirme que deseja fazer o ajuste?"
+      prompt: "Confirme que deseja fazer o ajuste na sua máquina?"
       private: true
   roles:
     - role: setup_etc_hosts
