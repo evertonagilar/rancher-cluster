@@ -14,13 +14,12 @@ Contém o código e automação para provisionar o **Rancher Server**.
 - Tecnologias: K3s, Rancher.
 
 ### `/rke2` (Downstream Clusters)
-Contém a definição dos clusters de carga de trabalho (Workload Clusters).
-- Clusters provisionados com **RKE2** (Rancher Kubernetes Engine 2).
+Contém o código e automação para provisionar clusters **RKE2**.
 - Estes clusters são onde as aplicações de negócio rodam.
-- São importados e gerenciados pelo Rancher Server.
+- Podem ser importados e gerenciados pelo Rancher Server.
 
 ### `/docs`
-Documentação técnica e manuis operacionais.
+Contém documentação técnica e manuais operacionais.
 - Manuais de instalação manual (fallbacks).
 - Guias de arquitetura.
 
