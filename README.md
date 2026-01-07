@@ -1,6 +1,16 @@
 # Projeto Rancher GitOps
 
-Este projeto adota uma abordagem **GitOps** para o gerenciamento de infraestrutura Kubernetes. O objetivo é manter o estado desejado da infraestrutura versionado e automatizado.
+<p align="center">
+  <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes"/>
+  <img src="https://img.shields.io/badge/Rancher-0075A8?style=for-the-badge&logo=rancher&logoColor=white" alt="Rancher"/>
+  <img src="https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white" alt="Ansible"/>
+  <img src="https://img.shields.io/badge/Vagrant-1868F2?style=for-the-badge&logo=vagrant&logoColor=white" alt="Vagrant"/>
+  <img src="https://img.shields.io/badge/VirtualBox-183A61?style=for-the-badge&logo=virtualbox&logoColor=white" alt="VirtualBox"/>
+  <img src="https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=helm&logoColor=white" alt="Helm"/>
+  <img src="https://img.shields.io/badge/GitOps-FC6D26?style=for-the-badge&logo=git&logoColor=white" alt="GitOps"/>
+</p>
+
+Este projeto adota uma abordagem **GitOps** para provisionamento de infraestrutura Kubernetes. O objetivo é manter o estado desejado da infraestrutura versionado e automatizado.
 
 ## Requisitos
 - Vagrant
@@ -34,13 +44,26 @@ Roles e playbooks para auxiliar na automação da instalação e configuração 
 
 ## Workflow de Provisionamento
 
-1.  **Bootstrap do Rancher**:
-    - `cd rancher && vagrant up`
-    - Provisiona o plano de controle central.
-2.  **Provisionamento de Clusters**:
-    - `cd rke2 && vagrant up`
-    - Cria a infraestrutura física/VM para os clusters de aplicação.
-    - Execução dos playbooks para instalar o RKE2.
-3.  **Adoção (Import)**:
-    - O cluster RKE2 é importado no dashboard do Rancher para gerenciamento centralizado (observabilidade, deploy de apps, RBAC).
+```bash
+# Para o cluster Rancher
+cd rancher
+ansible-playbook -i hosts.ini install-playbook.yml
 
+# Para o cluster RKE2
+cd rke2
+ansible-playbook -i hosts.ini install-playbook.yml
+```
+
+### Usando o Kubeconfig
+
+```bash
+cd rancher
+export KUBECONFIG=$(pwd)/kubeconfig
+kubectl get nodes
+```
+
+```bash
+cd rke2
+export KUBECONFIG=$(pwd)/kubeconfig
+kubectl get nodes
+```
