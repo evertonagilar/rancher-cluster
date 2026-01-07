@@ -1,0 +1,68 @@
+---
+- name: Create temporary kubeconfig copy on remote host
+  ansible.builtin.copy:
+    src: "{{ kubeconfig_source }}"
+    dest: "/tmp/kubeconfig-temp-{{ inventory_hostname }}.yaml"
+    remote_src: true
+    mode: "0644"
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+
+- name: Update server address in kubeconfig on remote host
+  ansible.builtin.replace:
+    path: "/tmp/kubeconfig-temp-{{ inventory_hostname }}.yaml"
+    regexp: 'https://127\.0\.0\.1:(\d+)'
+    replace: "https://{{ ansible_host }}:\\1"
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+
+- name: Update kubeconfig with cluster name and server address
+  ansible.builtin.shell:
+    cmd: |
+      sed -i \
+        -e 's|https://127\.0\.0\.1:\([0-9]*\)|https://{{ ansible_host }}:\1|g' \
+        -e 's|^  name: default$|  name: rancher-cluster-{{ lookup("env", "PWD") | basename }}|g' \
+        -e 's|^    cluster: default$|    cluster: rancher-cluster-{{ lookup("env", "PWD") | basename }}|g' \
+        -e 's|^  name: default$|  name: rancher-cluster-{{ lookup("env", "PWD") | basename }}|g' \
+        -e 's|^current-context: default$|current-context: rancher-cluster-{{ lookup("env", "PWD") | basename }}|g' \
+        /tmp/kubeconfig-temp-{{ inventory_hostname }}.yaml
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+  changed_when: true
+
+- name: Debug playbook_dir value
+  ansible.builtin.debug:
+    msg: >-
+      playbook_dir = {{ playbook_dir }},
+      PWD = {{ lookup('env', 'PWD') }},
+      kubeconfig_dest_dir = {{ kubeconfig_dest_dir | default(lookup('env', 'PWD')) }},
+      will save to {{ kubeconfig_dest_dir | default(lookup('env', 'PWD')) }}/kubeconfig
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+
+- name: Fetch kubeconfig directly to playbook directory
+  ansible.builtin.fetch:
+    src: "/tmp/kubeconfig-temp-{{ inventory_hostname }}.yaml"
+    dest: "{{ kubeconfig_dest_dir | default(lookup('env', 'PWD')) }}/kubeconfig"
+    flat: true
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+
+- name: Clean up temporary kubeconfig on remote host
+  ansible.builtin.file:
+    path: "/tmp/kubeconfig-temp-{{ inventory_hostname }}.yaml"
+    state: absent
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+
+- name: Display kubeconfig location
+  ansible.builtin.debug:
+    msg: "Kubeconfig saved to {{ kubeconfig_dest_dir | default(lookup('env', 'PWD')) }}/kubeconfig"
+  when: cluster_type != 'none'
+  run_once: true

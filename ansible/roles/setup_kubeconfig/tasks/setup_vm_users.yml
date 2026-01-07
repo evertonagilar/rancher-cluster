@@ -1,0 +1,39 @@
+---
+- name: Create .kube directory for VM users
+  ansible.builtin.file:
+    path: "/home/{{ item }}/.kube"
+    state: directory
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: "0700"
+  loop: "{{ target_users }}"
+  when: item != 'root'
+
+- name: Create .kube directory for root
+  ansible.builtin.file:
+    path: "/root/.kube"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  when: "'root' in target_users"
+
+- name: Copy kubeconfig to users' config
+  ansible.builtin.copy:
+    src: "{{ kubeconfig_source }}"
+    dest: "{{ '/root' if item == 'root' else '/home/' + item }}/.kube/config"
+    remote_src: true
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: "0600"
+  loop: "{{ target_users }}"
+  when: cluster_type != 'none'
+
+- name: Set KUBECONFIG permission for users (fallback if copy fails or for existing)
+  ansible.builtin.file:
+    path: "{{ '/root' if item == 'root' else '/home/' + item }}/.kube/config"
+    owner: "{{ item }}"
+    group: "{{ item }}"
+    mode: "0600"
+  loop: "{{ target_users }}"
+  when: cluster_type != 'none'

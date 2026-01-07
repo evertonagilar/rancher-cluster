@@ -1,6 +1,9 @@
 # Vagrant
 **/.vagrant/
 
+# Não armazenar arquivos de kubeconfig
+**/kubeconfig
+
 # Certificates and Keys
 *.crt
 *.key
@@ -19,5 +22,3 @@ Thumbs.db
 
 # Tmp files
 *.tmp
-
-**/kubeconfig
