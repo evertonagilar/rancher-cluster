@@ -36,16 +36,16 @@
 - name: Instalar K3s
   ansible.builtin.import_playbook: ../ansible/install-k3s-playbook.yml
 
+- name: Configurar kubeconfig
+  ansible.builtin.import_playbook: ../ansible/setup-kubeconfig-playbook.yml
+  vars:
+    kubeconfig_dest_dir: "{{ playbook_dir }}"
+
 - name: Instalar Cert-Manager
   ansible.builtin.import_playbook: ../ansible/install-cert-manager-playbook.yml
 
 - name: Instalar Rancher Server
   ansible.builtin.import_playbook: ../ansible/install-rancher-playbook.yml
-
-- name: Configurar kubeconfig
-  ansible.builtin.import_playbook: ../ansible/setup-kubeconfig-playbook.yml
-  vars:
-    kubeconfig_host_name: rancher-cluster-rancher.yaml
 
 - name: Configurar kubectl autocomplete
   ansible.builtin.import_playbook: ../ansible/setup-kubectl-autocomplete-playbook.yml

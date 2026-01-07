@@ -33,7 +33,7 @@
 - name: Configurar kubeconfig
   ansible.builtin.import_playbook: ../ansible/setup-kubeconfig-playbook.yml
   vars:
-    kubeconfig_host_name: rancher-cluster-rke2.yaml
+    kubeconfig_dest_dir: "{{ playbook_dir }}"
 
 - name: Configurar kubectl autocomplete
   ansible.builtin.import_playbook: ../ansible/setup-kubectl-autocomplete-playbook.yml
