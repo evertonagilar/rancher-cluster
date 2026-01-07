@@ -23,7 +23,7 @@
     msg: "No Kubernetes cluster configuration found. Neither k3s nor rke2 config exists."
   when: cluster_type == 'none'
 
-- name: Create .kube directory for users
+- name: Create .kube directory for VM users
   ansible.builtin.file:
     path: "/home/{{ item }}/.kube"
     state: directory
@@ -62,3 +62,76 @@
   loop: "{{ target_users }}"
   when: cluster_type != 'none'
 
+- name: Fetch kubeconfig from first host to localhost
+  ansible.builtin.fetch:
+    src: "{{ kubeconfig_source }}"
+    dest: "/tmp/kubeconfig-temp.yaml"
+    flat: true
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+    - kubeconfig_host_name is defined
+
+- name: Get first host IP address for kubeconfig
+  ansible.builtin.set_fact:
+    first_host_ip: "{{ hostvars[groups['all'][0]]['ansible_default_ipv4']['address'] }}"
+  when:
+    - cluster_type != 'none'
+    - inventory_hostname == groups['all'][0]
+    - kubeconfig_host_name is defined
+  run_once: true
+
+- name: Update server address in kubeconfig for localhost
+  ansible.builtin.replace:
+    path: "/tmp/kubeconfig-temp.yaml"
+    regexp: 'https://127\.0\.0\.1:(\d+)'
+    replace: "https://{{ hostvars[groups['all'][0]]['ansible_default_ipv4']['address'] }}:\\1"
+  delegate_to: localhost
+  become: false
+  when:
+    - cluster_type != 'none'
+    - kubeconfig_host_name is defined
+  run_once: true
+
+- name: Create .kube directory on localhost
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/.kube"
+    state: directory
+    mode: '0700'
+  delegate_to: localhost
+  become: false
+  when:
+    - cluster_type != 'none'
+    - kubeconfig_host_name is defined
+  run_once: true
+
+- name: Copy kubeconfig to localhost ~/.kube
+  ansible.builtin.copy:
+    src: "/tmp/kubeconfig-temp.yaml"
+    dest: "{{ lookup('env', 'HOME') }}/.kube/{{ kubeconfig_host_name }}"
+    mode: '0600'
+  delegate_to: localhost
+  become: false
+  when:
+    - cluster_type != 'none'
+    - kubeconfig_host_name is defined
+  run_once: true
+
+- name: Clean up temporary kubeconfig
+  ansible.builtin.file:
+    path: "/tmp/kubeconfig-temp.yaml"
+    state: absent
+  delegate_to: localhost
+  become: false
+  when:
+    - cluster_type != 'none'
+    - kubeconfig_host_name is defined
+  run_once: true
+
+- name: Display kubeconfig location on localhost
+  ansible.builtin.debug:
+    msg: "Kubeconfig copied to {{ lookup('env', 'HOME') }}/.kube/{{ kubeconfig_host_name }}"
+  when:
+    - cluster_type != 'none'
+    - kubeconfig_host_name is defined
+  run_once: true

@@ -39,52 +39,87 @@ O RKE2 é uma distribuição Kubernetes certificada pela CNCF focada em seguran�
 
 ## 🚀 Como utilizar
 
-### 1. Subir as Máquinas Virtuais
+### Opção 1: Instalação Automatizada (Recomendado)
 
-```bash
-vagrant up
-```
+1. **Subir as Máquinas Virtuais:**
+   ```bash
+   vagrant up
+   ```
 
-### 2. Preparar as VMs
+2. **Executar o playbook consolidado:**
+   ```bash
+   ansible-playbook -i hosts.ini install-playbook.yml
+   ```
+
+   Este playbook executa automaticamente todos os passos necessários:
+   - Preparação das VMs (usuários, pacotes, kernel, etc.)
+   - Instalação do RKE2 (Server + Agents)
+   - Configuração do kubeconfig e autocomplete
+   - **Cópia automática do kubeconfig para o host local** em `~/.kube/rancher-cluster-rke2.yaml`
+
+3. **Acessar o cluster localmente:**
+   ```bash
+   # Usar o kubeconfig copiado automaticamente
+   export KUBECONFIG=~/.kube/rancher-cluster-rke2.yaml
+   kubectl get nodes
+   ```
+
+4. **Configuração opcional:**
+   ```bash
+   # Adiciona entrada DNS no /etc/hosts (Remoto e Local)
+   # Nota: Pode solicitar sua senha sudo local para o localhost
+   ansible-playbook -i hosts.ini ../ansible/setup-etc-hosts-playbook.yml --ask-become-pass
+   ```
+
+---
+
+### Opção 2: Instalação Passo a Passo
+
+1. **Subir as Máquinas Virtuais:**
+   ```bash
+   vagrant up
+   ```
+
+2. **Preparar as VMs:**
 
 Execute os playbooks de preparação básica do sistema:
 
-```bash
-ansible-playbook -i hosts.ini ../ansible/create-local-users-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/install-common-software-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/disable-swap-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/config-sysctl-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/load-kernel-modules-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/install-chrony-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/locale-timezone-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/config-vim-playbook.yml
-```
+   ```bash
+   ansible-playbook -i hosts.ini ../ansible/create-local-users-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-common-software-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/disable-swap-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/config-sysctl-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/load-kernel-modules-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/install-chrony-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/locale-timezone-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/config-vim-playbook.yml
+   ```
 
-### 3. Instalar RKE2
+3. **Instalar RKE2:**
 
 Execute o playbook de instalação do RKE2:
 
-```bash
-ansible-playbook -i hosts.ini ../ansible/install-rke2-playbook.yml
-```
+   ```bash
+   ansible-playbook -i hosts.ini ../ansible/install-rke2-playbook.yml
+   ```
 
-Este playbook irá:
-- Instalar o RKE2 Server no nó master
-- Instalar os RKE2 Agents nos nós workers
-- Configurar automaticamente o token de autenticação
-- Criar links simbólicos para `kubectl` e `crictl`
+   Este playbook irá:
+   - Instalar o RKE2 Server no nó master
+   - Instalar os RKE2 Agents nos nós workers
+   - Configurar automaticamente o token de autenticação
+   - Criar links simbólicos para `kubectl` e `crictl`
 
-### 4. Configuração Opcional
+4. **Configuração Opcional:**
 
-```bash
-# Configura kubeconfig e autocomplete
-ansible-playbook -i hosts.ini ../ansible/setup-kubeconfig-playbook.yml
-ansible-playbook -i hosts.ini ../ansible/setup-kubectl-autocomplete-playbook.yml
+   ```bash
+   # Configura kubeconfig e autocomplete
+   ansible-playbook -i hosts.ini ../ansible/setup-kubeconfig-playbook.yml
+   ansible-playbook -i hosts.ini ../ansible/setup-kubectl-autocomplete-playbook.yml
 
-# Adiciona entrada DNS no /etc/hosts (Remoto e Local)
-# Nota: Pode solicitar sua senha sudo local para o localhost
-ansible-playbook -i hosts.ini ../ansible/setup-etc-hosts-playbook.yml --ask-become-pass
-```
+   # Adiciona entrada DNS no /etc/hosts (Remoto e Local)
+   # Nota: Pode solicitar sua senha sudo local para o localhost
+   ansible-playbook -i hosts.ini ../ansible/setup-etc-hosts-playbook.yml --ask-become-pass
+   ```
 
 ---
 

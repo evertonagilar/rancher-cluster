@@ -1,0 +1,51 @@
+---
+# Playbook principal para instalação completa do Rancher Server em K3s
+# Este playbook executa todos os passos necessários para provisionar e configurar
+# o ambiente Rancher conforme documentado no README.md
+
+- name: Preparar VMs - Criar usuários locais
+  ansible.builtin.import_playbook: ../ansible/create-local-users-playbook.yml
+
+- name: Preparar VMs - Instalar software comum
+  ansible.builtin.import_playbook: ../ansible/install-common-software-playbook.yml
+
+- name: Preparar VMs - Desabilitar swap
+  ansible.builtin.import_playbook: ../ansible/disable-swap-playbook.yml
+
+- name: Preparar VMs - Configurar sysctl
+  ansible.builtin.import_playbook: ../ansible/config-sysctl-playbook.yml
+
+- name: Preparar VMs - Carregar módulos do kernel
+  ansible.builtin.import_playbook: ../ansible/load-kernel-modules-playbook.yml
+
+- name: Preparar VMs - Instalar e configurar Chrony
+  ansible.builtin.import_playbook: ../ansible/install-chrony-playbook.yml
+
+- name: Preparar VMs - Configurar locale e timezone
+  ansible.builtin.import_playbook: ../ansible/locale-timezone-playbook.yml
+
+- name: Preparar VMs - Configurar Vim
+  ansible.builtin.import_playbook: ../ansible/config-vim-playbook.yml
+
+- name: Instalar Docker
+  ansible.builtin.import_playbook: ../ansible/install-docker-playbook.yml
+
+- name: Instalar Helm
+  ansible.builtin.import_playbook: ../ansible/install-helm-playbook.yml
+
+- name: Instalar K3s
+  ansible.builtin.import_playbook: ../ansible/install-k3s-playbook.yml
+
+- name: Instalar Cert-Manager
+  ansible.builtin.import_playbook: ../ansible/install-cert-manager-playbook.yml
+
+- name: Instalar Rancher Server
+  ansible.builtin.import_playbook: ../ansible/install-rancher-playbook.yml
+
+- name: Configurar kubeconfig
+  ansible.builtin.import_playbook: ../ansible/setup-kubeconfig-playbook.yml
+  vars:
+    kubeconfig_host_name: rancher-cluster-rancher.yaml
+
+- name: Configurar kubectl autocomplete
+  ansible.builtin.import_playbook: ../ansible/setup-kubectl-autocomplete-playbook.yml

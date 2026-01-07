@@ -33,6 +33,8 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
 
 ## 🚀 Como utilizar
 
+### Opção 1: Instalação Automatizada (Recomendado)
+
 1. **Subir a Máquina Virtual:**
    ```bash
    vagrant up
@@ -42,7 +44,62 @@ O projeto foi transformado de playbooks lineares para uma estrutura de **Roles**
    
    Como os certificados não são versionados no Git, você precisa copiá-los manualmente para as pastas `files` das respectivas roles antes da execução.
 
-   ### Rancher
+   #### Rancher
+   
+   Copie os seguintes arquivos para `ansible/roles/rancher_install/files/`:
+   
+   ```
+   ansible/roles/rancher_install/files/
+   ├── cert.crt              # Certificado do servidor (ex: rancher.arq.unb.br)
+   ├── key.key               # Chave privada do certificado
+   ├── intermediate.pem      # Certificado intermediário da CA
+   └── gs_root.pem          # Certificado raiz da CA (GlobalSign)
+   ```
+   
+   > **Nota:** A role cria automaticamente uma cadeia completa de certificados (server → intermediate → root) para garantir a validação correta da cadeia de confiança.
+
+3. **Executar o playbook consolidado:**
+   ```bash
+   ansible-playbook -i hosts.ini install-playbook.yml
+   ```
+
+   Este playbook executa automaticamente todos os passos necessários:
+   - Preparação das VMs (usuários, pacotes, kernel, etc.)
+   - Instalação do Docker
+   - Instalação do K3s e Helm
+   - Instalação do Cert-Manager
+   - Instalação do Rancher Server
+   - Configuração do kubeconfig e autocomplete
+   - **Cópia automática do kubeconfig para o host local** em `~/.kube/rancher-cluster-rancher.yaml`
+
+4. **Acessar o cluster localmente:**
+   ```bash
+   # Usar o kubeconfig copiado automaticamente
+   export KUBECONFIG=~/.kube/rancher-cluster-rancher.yaml
+   kubectl get nodes
+   ```
+
+5. **Configuração opcional:**
+   ```bash
+   # Adiciona entrada DNS no /etc/hosts (Remoto e Local)
+   # Nota: Pode solicitar sua senha sudo local para o localhost
+   ansible-playbook -i hosts.ini ../ansible/setup-hosts-playbook.yml --ask-become-pass
+   ```
+
+---
+
+### Opção 2: Instalação Passo a Passo
+
+1. **Subir a Máquina Virtual:**
+   ```bash
+   vagrant up
+   ```
+
+2. **Configuração de Certificados TLS (Importante ⚠️):**
+   
+   Como os certificados não são versionados no Git, você precisa copiá-los manualmente para as pastas `files` das respectivas roles antes da execução.
+
+   #### Rancher
    
    Copie os seguintes arquivos para `ansible/roles/rancher_install/files/`:
    

@@ -1,0 +1,39 @@
+---
+# Playbook principal para instalação completa do Cluster RKE2
+# Este playbook executa todos os passos necessários para provisionar e configurar
+# o cluster RKE2 conforme documentado no README.md
+
+- name: Preparar VMs - Criar usuários locais
+  ansible.builtin.import_playbook: ../ansible/create-local-users-playbook.yml
+
+- name: Preparar VMs - Instalar software comum
+  ansible.builtin.import_playbook: ../ansible/install-common-software-playbook.yml
+
+- name: Preparar VMs - Desabilitar swap
+  ansible.builtin.import_playbook: ../ansible/disable-swap-playbook.yml
+
+- name: Preparar VMs - Configurar sysctl
+  ansible.builtin.import_playbook: ../ansible/config-sysctl-playbook.yml
+
+- name: Preparar VMs - Carregar módulos do kernel
+  ansible.builtin.import_playbook: ../ansible/load-kernel-modules-playbook.yml
+
+- name: Preparar VMs - Instalar e configurar Chrony
+  ansible.builtin.import_playbook: ../ansible/install-chrony-playbook.yml
+
+- name: Preparar VMs - Configurar locale e timezone
+  ansible.builtin.import_playbook: ../ansible/locale-timezone-playbook.yml
+
+- name: Preparar VMs - Configurar Vim
+  ansible.builtin.import_playbook: ../ansible/config-vim-playbook.yml
+
+- name: Instalar RKE2
+  ansible.builtin.import_playbook: ../ansible/install-rke2-playbook.yml
+
+- name: Configurar kubeconfig
+  ansible.builtin.import_playbook: ../ansible/setup-kubeconfig-playbook.yml
+  vars:
+    kubeconfig_host_name: rancher-cluster-rke2.yaml
+
+- name: Configurar kubectl autocomplete
+  ansible.builtin.import_playbook: ../ansible/setup-kubectl-autocomplete-playbook.yml
