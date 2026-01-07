@@ -18,7 +18,7 @@
   ansible.builtin.debug:
     msg: "Detected cluster type: {{ cluster_type }}"
 
-- name: Fail if no cluster configuration found
-  ansible.builtin.fail:
-    msg: "No Kubernetes cluster configuration found. Neither k3s nor rke2 config exists."
+- name: Warn if no cluster configuration found
+  ansible.builtin.debug:
+    msg: "No Kubernetes cluster configuration found. Skipping kubeconfig setup."
   when: cluster_type == 'none'
