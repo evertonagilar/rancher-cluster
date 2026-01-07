@@ -34,6 +34,12 @@ Contém o código e automação para provisionar clusters **RKE2**.
 - Estes clusters são onde as aplicações de negócio rodam.
 - Podem ser importados e gerenciados pelo Rancher Server.
 
+### `/vault` (Secrets Management)
+Contém o código e automação para provisionar o **HashiCorp Vault**.
+- Cluster dedicado para gerenciamento de segredos.
+- Baseado em K3s, leve e eficiente.
+- Tecnologias: K3s, Vault.
+
 ### `/docs`
 Contém documentação técnica e manuais operacionais.
 - Manuais de instalação manual em vez de Ansible.
@@ -52,6 +58,10 @@ ansible-playbook -i hosts.ini install-playbook.yml
 # Para o cluster RKE2
 cd rke2
 ansible-playbook -i hosts.ini install-playbook.yml
+
+# Para o cluster Vault
+cd vault
+ansible-playbook -i hosts.ini install-playbook.yml
 ```
 
 ### Usando o Kubeconfig
@@ -64,6 +74,12 @@ kubectl get nodes
 
 ```bash
 cd rke2
+export KUBECONFIG=$(pwd)/kubeconfig
+kubectl get nodes
+```
+
+```bash
+cd vault
 export KUBECONFIG=$(pwd)/kubeconfig
 kubectl get nodes
 ```
