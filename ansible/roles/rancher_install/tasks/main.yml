@@ -5,8 +5,11 @@
 - name: Setup namespace
   ansible.builtin.include_tasks: setup_namespace.yml
 
-- name: Create certificate fullchain
+- name: Create certificate fullchain (requisito para setup_ca_secrets.yml e setup_tls_secret.yml)
   ansible.builtin.include_tasks: create_fullchain.yml
+
+- name: Setup CA secrets
+  ansible.builtin.include_tasks: setup_ca_secrets.yml
 
 - name: Setup TLS secret
   ansible.builtin.include_tasks: setup_tls_secret.yml

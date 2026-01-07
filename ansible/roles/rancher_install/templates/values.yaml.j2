@@ -1,0 +1,24 @@
+---
+hostname: {{ rancher_hostname }}
+bootstrapPassword: {{ rancher_admin_password }}
+
+# Ingress configuration
+ingress:
+  tls:
+    # Use existing secret for TLS
+    source: secret
+    # Name of the TLS secret
+    secretName: {{ rancher_secret_name }}
+
+# Private CA configuration
+# Set to true when using a private/self-signed CA
+privateCA: true
+
+# Additional Trusted CAs
+# Enable this to trust additional CA certificates
+# Requires a secret named tls-ca-additional in the cattle-system namespace
+additionalTrustedCAs: true
+
+# Agent TLS mode
+# strict: Only trust CAs provided via secrets (more secure)
+agentTLSMode: strict

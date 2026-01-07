@@ -1,0 +1,16 @@
+---
+- name: Create temporary CA bundle (intermediate + root only)
+  ansible.builtin.shell:
+    cmd: cat {{ temp_intermediate_path }} {{ temp_root_path }} > /tmp/ca-bundle.pem
+  changed_when: true
+
+- name: Download GlobalSign R3 root certificate (DER format)
+  ansible.builtin.get_url:
+    url: https://secure.globalsign.com/cacert/root-r3.crt
+    dest: /tmp/root-r3.crt
+    mode: "0644"
+
+- name: Convert GlobalSign R3 certificate to PEM and append to CA bundle
+  ansible.builtin.shell:
+    cmd: openssl x509 -inform DER -outform PEM -in /tmp/root-r3.crt >> /tmp/ca-bundle.pem
+  changed_when: true

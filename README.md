@@ -2,6 +2,12 @@
 
 Este projeto adota uma abordagem **GitOps** para o gerenciamento de infraestrutura Kubernetes. O objetivo é manter o estado desejado da infraestrutura versionado e automatizado.
 
+## Requisitos
+- Vagrant
+- VirtualBox
+- Ansible
+- Helm
+
 ## Estrutura do Projeto
 
 A organização das pastas reflete a separação de responsabilidades na infraestrutura:
@@ -20,11 +26,11 @@ Contém o código e automação para provisionar clusters **RKE2**.
 
 ### `/docs`
 Contém documentação técnica e manuais operacionais.
-- Manuais de instalação manual (fallbacks).
+- Manuais de instalação manual em vez de Ansible.
 - Guias de arquitetura.
 
 ### `/ansible`
-Roles e playbooks que podem ser reutilizados ou que estão em processo de refatoração para as pastas específicas.
+Roles e playbooks para auxiliar na automação da instalação e configuração dos componentes do projeto.
 
 ## Workflow de Provisionamento
 
@@ -38,8 +44,3 @@ Roles e playbooks que podem ser reutilizados ou que estão em processo de refato
 3.  **Adoção (Import)**:
     - O cluster RKE2 é importado no dashboard do Rancher para gerenciamento centralizado (observabilidade, deploy de apps, RBAC).
 
-## Requisitos
-- Vagrant
-- VirtualBox
-- Ansible
-- Helm

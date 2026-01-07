@@ -9,3 +9,4 @@
     - "{{ temp_intermediate_path }}"
     - "{{ temp_root_path }}"
     - "{{ temp_cert_chain_path }}"
+    - /tmp/ca-bundle.pem

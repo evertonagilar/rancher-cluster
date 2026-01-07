@@ -1,4 +1,4 @@
-# Guia de Instalação do Rancher Server (K3s + Vagrant VM)
+# Guia de Instalação manual do Rancher Server (K3s + Vagrant VM)
 
 Este manual descreve o procedimento para instalar o Rancher Server em uma Máquina Virtual Ubuntu utilizando Vagrant e K3s.
 
@@ -26,13 +26,6 @@ Dentro da VM, atualize os pacotes e instale as dependências básicas.
 sudo apt update && sudo apt install -y git curl iputils-ping iptables-persistent vim
 ```
 
-**Via Ansible:**
-```bash
-ansible-playbook -i hosts.ini ansible/prepare-vm-playbook.yml
-```
-
-> **Nota:** Este playbook utiliza a role `common_software` para instalar pacotes essenciais.
-
 ## 3. Instalação do K3s (Configuração de Rede)
 
 Como a VM possui múltiplas interfaces, é crucial informar ao K3s qual IP e interface utilizar para evitar que ele utilize a rede NAT interna do Vagrant.
@@ -47,11 +40,6 @@ curl -sfL https://get.k3s.io | sh -s - \
   --flannel-iface=enp0s8 \
   --write-kubeconfig-mode=644 \
   --write-kubeconfig-group=rancher
-```
-
-**Via Ansible:**
-```bash
-ansible-playbook -i hosts.ini ansible/install-k3s-playbook.yml
 ```
 
 ### Verificação
@@ -95,14 +83,7 @@ helm install cert-manager jetstack/cert-manager \
   --version v1.13.0
 ```
 
-**Via Ansible:**
-```bash
-ansible-playbook -i hosts.ini ansible/install-cert-manager-playbook.yml
-```
-
 ## 6. Instalação do Rancher
-
-Substitua `rancher.localhost` pelo hostname desejado se necessário.
 
 ```bash
 # Criar namespace
@@ -119,14 +100,6 @@ helm install rancher rancher-stable/rancher \
   --set bootstrapPassword=admin \
   --set ingress.tls.source=rancher # ou secret se usar certs próprios
 ```
-
-**Via Ansible:**
-```bash
-ansible-playbook -i hosts.ini ansible/install-rancher-playbook.yml
-```
-
-> [!NOTE]
-> O playbook de instalação do Rancher também automatiza a criação do segredo TLS caso você forneça os arquivos de certificado.
 
 ## 7. Acesso ao Dashboard do Host
 
