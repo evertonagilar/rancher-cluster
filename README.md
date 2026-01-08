@@ -158,10 +158,6 @@ export KUBECONFIG=$(pwd)/kubeconfig
 kubectl get nodes
 ```
 
-## Quer contribuir?
-
-Este é um projeto de POC para demonstração e aprendizado. Contribuições são bem-vindas!
-
 ---
 
 <p align="center">
