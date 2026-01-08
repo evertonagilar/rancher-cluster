@@ -1,0 +1,6 @@
+---
+- name: Setup namespace
+  ansible.builtin.include_tasks: setup_namespace.yml
+
+- name: Install Vault Secrets Operator
+  ansible.builtin.include_tasks: install_operator.yml

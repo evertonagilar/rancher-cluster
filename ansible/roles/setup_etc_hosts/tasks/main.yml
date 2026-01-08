@@ -1,5 +1,5 @@
 ---
-- name: "Update /etc/hosts with DNS entries"
+- name: "Update /etc/hosts with DNS entries from dns_entries variable"
   ansible.builtin.lineinfile:
     path: /etc/hosts
     regexp: "^.*{{ item.domain | regex_escape }}$"

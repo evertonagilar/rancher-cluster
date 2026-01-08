@@ -1,0 +1,22 @@
+---
+- name: Create Vault Helm values file from template
+  ansible.builtin.template:
+    src: values.yaml.j2
+    dest: /tmp/vault-values.yaml
+    mode: "0644"
+
+- name: Install HashiCorp Vault
+  kubernetes.core.helm:
+    name: vault
+    chart_ref: hashicorp/vault
+    release_namespace: "{{ vault_namespace }}"
+    update_repo_cache: true
+    values_files:
+      - /tmp/vault-values.yaml
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
+- name: Remove temporary Vault values file
+  ansible.builtin.file:
+    path: /tmp/vault-values.yaml
+    state: absent

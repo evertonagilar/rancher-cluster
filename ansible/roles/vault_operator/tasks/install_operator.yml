@@ -1,0 +1,22 @@
+---
+- name: Create Vault Operator Helm values file from template
+  ansible.builtin.template:
+    src: values.yaml.j2
+    dest: /tmp/vault-operator-values.yaml
+    mode: "0644"
+
+- name: Install Vault Secrets Operator
+  kubernetes.core.helm:
+    name: vault-secrets-operator
+    chart_ref: hashicorp/vault-secrets-operator
+    release_namespace: "{{ vault_operator_namespace }}"
+    update_repo_cache: true
+    values_files:
+      - /tmp/vault-operator-values.yaml
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+
+- name: Remove temporary Vault Operator values file
+  ansible.builtin.file:
+    path: /tmp/vault-operator-values.yaml
+    state: absent

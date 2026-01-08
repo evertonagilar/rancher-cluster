@@ -1,0 +1,12 @@
+---
+- name: Remove temporary certificate files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ temp_cert_path }}"
+    - "{{ temp_key_path }}"
+    - "{{ temp_intermediate_path }}"
+    - "{{ temp_root_path }}"
+    - "{{ temp_ca_bundle_path }}"
+    - /tmp/vault-root-r3.crt

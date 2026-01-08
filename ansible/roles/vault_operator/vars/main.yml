@@ -1,0 +1,5 @@
+---
+vault_operator_namespace: "vault-secrets-operator"
+vault_namespace: "vault"
+vault_hostname: "vault.arq.unb.br"
+kubeconfig_path: "/etc/rancher/k3s/k3s.yaml"

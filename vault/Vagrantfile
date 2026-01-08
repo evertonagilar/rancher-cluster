@@ -7,8 +7,8 @@ Vagrant.configure("2") do |config|
   config.ssh.verify_host_key = false
 
   config.vm.provider "virtualbox" do |vb|
-     vb.memory = "4096"
-     vb.cpus = 2
+     vb.memory = "2048"
+     vb.cpus = 1
   end
 
 end

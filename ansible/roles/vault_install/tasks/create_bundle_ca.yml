@@ -1,0 +1,28 @@
+---
+- name: Copy intermediate certificate to temp location
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ intermediate_cert_file }}"
+    dest: "{{ temp_intermediate_path }}"
+    mode: "0644"
+
+- name: Copy root certificate to temp location
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ root_cert_file }}"
+    dest: "{{ temp_root_path }}"
+    mode: "0644"
+
+- name: Create temporary CA bundle (intermediate + root only)
+  ansible.builtin.shell:
+    cmd: cat {{ temp_intermediate_path }} {{ temp_root_path }} > {{ temp_ca_bundle_path }}
+  changed_when: true
+
+- name: Download GlobalSign R3 root certificate (DER format)
+  ansible.builtin.get_url:
+    url: https://secure.globalsign.com/cacert/root-r3.crt
+    dest: /tmp/vault-root-r3.crt
+    mode: "0644"
+
+- name: Convert GlobalSign R3 certificate to PEM and append to CA bundle
+  ansible.builtin.shell:
+    cmd: openssl x509 -inform DER -outform PEM -in /tmp/vault-root-r3.crt >> {{ temp_ca_bundle_path }}
+  changed_when: true

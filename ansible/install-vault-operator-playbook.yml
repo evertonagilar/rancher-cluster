@@ -1,0 +1,7 @@
+---
+- name: Install Vault Secrets Operator
+  hosts: all
+  run_once: true
+  become: true
+  roles:
+    - role: vault_operator

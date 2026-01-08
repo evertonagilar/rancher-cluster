@@ -1,0 +1,7 @@
+---
+- name: Add HashiCorp Helm repository
+  kubernetes.core.helm_repository:
+    name: hashicorp
+    repo_url: https://helm.releases.hashicorp.com
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"

@@ -5,7 +5,7 @@
     dest: /tmp/install_k3s.sh
     mode: '0755'
 
-- name: Run K3s installation script
+- name: Run K3s installation script on {{ node_ip }}
   ansible.builtin.command:
     cmd: >
       /tmp/install_k3s.sh
