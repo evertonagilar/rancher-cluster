@@ -158,53 +158,14 @@ export KUBECONFIG=$(pwd)/kubeconfig
 kubectl get nodes
 ```
 
-## Características da POC
-
-### ✅ Automação Completa
-- Provisionamento de VMs com Vagrant
-- Configuração automatizada com Ansible
-- Deploy de aplicações com Helm
-- Zero configuração manual
-
-### ✅ GitOps
-- Infraestrutura como código versionada
-- Estado desejado declarativo
-- Rastreabilidade de mudanças
-- Fácil rollback e auditoria
-
-### ✅ Modularidade
-- Roles Ansible reutilizáveis
-- Componentes independentes
-- Fácil manutenção e extensão
-- Separação de responsabilidades
-
-### ✅ Segurança
-- TLS em todos os serviços
-- Gerenciamento centralizado de segredos
-- Autenticação LDAP
-- Certificados wildcard
-
-### ✅ Enterprise-Ready
-- Alta disponibilidade (preparado para)
-- Monitoramento e observabilidade (planejado)
-- Backup e disaster recovery (planejado)
-- Integração com CI/CD (ArgoCD planejado)
-
-## Estrutura Organizacional (OpenLDAP)
-
-### Usuários
-- **interno** - Equipe de suporte
-- **evertonagilar** - Developer/DevOps
-- **rancher** - Service account
-- **argocd** - Service account
-
-### Grupos
-- developer, devops, support, rh, comercial, dba
-
 ## Quer contribuir?
 
 Este é um projeto de POC para demonstração e aprendizado. Contribuições são bem-vindas!
 
-## Licença
+---
 
-Este projeto é fornecido "como está" para fins educacionais e de demonstração.
+<p align="center">
+  <sub>Em desenvolvimento por <strong>Everton de Vargas Agilar</strong></sub>
+  <br>
+  <sub>© 2024-2026</sub>
+</p>
