@@ -1,8 +1,9 @@
-# Projeto Rancher GitOps
+# Datacenter POC - Infrastructure as Code
 
 <p align="center">
   <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white" alt="Kubernetes"/>
   <img src="https://img.shields.io/badge/Rancher-0075A8?style=for-the-badge&logo=rancher&logoColor=white" alt="Rancher"/>
+  <img src="https://img.shields.io/badge/Vault-000000?style=for-the-badge&logo=vault&logoColor=white" alt="Vault"/>
   <img src="https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white" alt="Ansible"/>
   <img src="https://img.shields.io/badge/Vagrant-1868F2?style=for-the-badge&logo=vagrant&logoColor=white" alt="Vagrant"/>
   <img src="https://img.shields.io/badge/VirtualBox-183A61?style=for-the-badge&logo=virtualbox&logoColor=white" alt="VirtualBox"/>
@@ -10,76 +11,200 @@
   <img src="https://img.shields.io/badge/GitOps-FC6D26?style=for-the-badge&logo=git&logoColor=white" alt="GitOps"/>
 </p>
 
-Este projeto adota uma abordagem **GitOps** para provisionamento de infraestrutura Kubernetes. O objetivo é manter o estado desejado da infraestrutura versionado e automatizado.
+## Visão Geral
+
+Este projeto é uma **Prova de Conceito (POC)** de um datacenter completo implementado com **Infrastructure as Code (IaC)** e práticas **GitOps**. O objetivo é demonstrar a automação completa de provisionamento, configuração e gerenciamento de uma infraestrutura empresarial moderna, incluindo:
+
+- **Gerenciamento de Clusters Kubernetes** (Rancher)
+- **Gerenciamento de Segredos** (HashiCorp Vault)
+- **Autenticação Centralizada** (OpenLDAP)
+- **Clusters de Produção** (RKE2)
+- **GitOps e CI/CD** (ArgoCD - planejado)
+
+Toda a infraestrutura é provisionada automaticamente usando **Vagrant** para VMs, **Ansible** para configuração, e **Helm** para aplicações Kubernetes, mantendo o estado desejado versionado em Git.
+
+## Arquitetura da POC
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Datacenter POC                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │   Rancher    │  │    Vault     │  │   OpenLDAP   │     │
+│  │  Management  │  │   Secrets    │  │     Auth     │     │
+│  │   Cluster    │  │  Management  │  │   Service    │     │
+│  │    (K3s)     │  │    (K3s)     │  │    (K3s)     │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│                                                             │
+│  ┌──────────────┐  ┌──────────────┐                       │
+│  │     RKE2     │  │    ArgoCD    │                       │
+│  │  Production  │  │    GitOps    │                       │
+│  │   Cluster    │  │   (Planned)  │                       │
+│  └──────────────┘  └──────────────┘                       │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+## Componentes da Infraestrutura
+
+### 🎯 `/rancher` - Management Plane
+**Cluster de gerenciamento Rancher**
+- Orquestra e gerencia todos os clusters Kubernetes
+- Interface web para administração centralizada
+- Baseado em K3s (leve e eficiente)
+
+### 🔐 `/vault` - Secrets Management
+**Servidor HashiCorp Vault**
+- Gerenciamento centralizado de segredos e credenciais
+- Integração com Kubernetes via Vault Secrets Operator
+- Suporte a múltiplos backends de autenticação
+
+### 👥 `/openldap` - Authentication Service
+**Servidor OpenLDAP**
+- Autenticação centralizada LDAP/LDAPS
+- Estrutura organizacional simulando empresa de TI
+- Usuários e grupos pré-configurados
+- Integração com Rancher, Vault e ArgoCD
+
+### 🚀 `/rke2` - Production Cluster
+**Cluster RKE2 para workloads de produção**
+- Cluster Kubernetes enterprise-grade
+- Importado e gerenciado pelo Rancher
+- Otimizado para cargas de trabalho críticas
+
+### 📦 `/ansible` - Automation Layer
+**Roles e playbooks Ansible**
+- Automação modular e reutilizável
+- Roles para cada componente da infraestrutura
+- Preparação de VMs, instalação de software, configuração
+
+### 📚 `/docs` - Documentation
+**Documentação técnica e manuais**
+- Guias de instalação manual
+- Arquitetura e design decisions
+- Troubleshooting e operação
 
 ## Requisitos
-- Vagrant
-- VirtualBox
-- Ansible
-- Helm
 
-## Estrutura do Projeto
+- **VirtualBox** - Virtualização
+- **Vagrant** - Provisionamento de VMs
+- **Ansible** - Automação de configuração
+- **Helm** - Gerenciamento de aplicações Kubernetes
 
-A organização das pastas reflete a separação de responsabilidades na infraestrutura:
+## Início Rápido
 
-### `/rancher` (Management Plane)
-Contém o código e automação para provisionar o **Rancher Server**.
-- Este é o "cluster de gerenciamento".
-- Geralmente provisionado primeiro.
-- Responsável por orquestrar e gerenciar outros clusters.
-- Tecnologias: K3s, Rancher.
-
-### `/rke2` (Downstream Clusters)
-Contém o código e automação para provisionar clusters **RKE2**.
-- Estes clusters são onde as aplicações de negócio rodam.
-- Podem ser importados e gerenciados pelo Rancher Server.
-
-### `/vault` (Secrets Management)
-Contém o código e automação para provisionar o **HashiCorp Vault**.
-- Cluster dedicado para gerenciamento de segredos.
-- Baseado em K3s, leve e eficiente.
-- Tecnologias: K3s, Vault.
-
-### `/docs`
-Contém documentação técnica e manuais operacionais.
-- Manuais de instalação manual em vez de Ansible.
-- Guias de arquitetura.
-
-### `/ansible`
-Roles e playbooks para auxiliar na automação da instalação e configuração dos componentes do projeto.
-
-## Workflow de Provisionamento
+### 1. Provisionar Rancher (Management Cluster)
 
 ```bash
-# Para o cluster Rancher
 cd rancher
-ansible-playbook -i hosts.ini install-playbook.yml
-
-# Para o cluster RKE2
-cd rke2
-ansible-playbook -i hosts.ini install-playbook.yml
-
-# Para o cluster Vault
-cd vault
+vagrant up
 ansible-playbook -i hosts.ini install-playbook.yml
 ```
 
-### Usando o Kubeconfig
+### 2. Provisionar Vault (Secrets Management)
 
+```bash
+cd vault
+vagrant up
+ansible-playbook -i hosts.ini install-playbook.yml
+```
+
+### 3. Provisionar OpenLDAP (Authentication)
+
+```bash
+cd openldap
+vagrant up
+ansible-playbook -i hosts.ini install-playbook.yml
+```
+
+### 4. Provisionar RKE2 (Production Cluster)
+
+```bash
+cd rke2
+vagrant up
+ansible-playbook -i hosts.ini install-playbook.yml
+```
+
+## Acessando os Serviços
+
+### Rancher
 ```bash
 cd rancher
 export KUBECONFIG=$(pwd)/kubeconfig
 kubectl get nodes
+# Acesse via navegador usando o IP ou domínio configurado
 ```
 
+### Vault
+```bash
+cd vault
+export KUBECONFIG=$(pwd)/kubeconfig
+kubectl get nodes
+# Acesse via navegador usando o IP ou domínio configurado
+```
+
+### OpenLDAP
+```bash
+# Testar conectividade LDAP (ajuste o domínio conforme configurado)
+ldapsearch -x -H ldaps://<ldap-hostname> -b "<base-dn>" \
+  -D "cn=admin,<base-dn>" -W
+```
+
+### RKE2
 ```bash
 cd rke2
 export KUBECONFIG=$(pwd)/kubeconfig
 kubectl get nodes
 ```
 
-```bash
-cd vault
-export KUBECONFIG=$(pwd)/kubeconfig
-kubectl get nodes
-```
+## Características da POC
+
+### ✅ Automação Completa
+- Provisionamento de VMs com Vagrant
+- Configuração automatizada com Ansible
+- Deploy de aplicações com Helm
+- Zero configuração manual
+
+### ✅ GitOps
+- Infraestrutura como código versionada
+- Estado desejado declarativo
+- Rastreabilidade de mudanças
+- Fácil rollback e auditoria
+
+### ✅ Modularidade
+- Roles Ansible reutilizáveis
+- Componentes independentes
+- Fácil manutenção e extensão
+- Separação de responsabilidades
+
+### ✅ Segurança
+- TLS em todos os serviços
+- Gerenciamento centralizado de segredos
+- Autenticação LDAP
+- Certificados wildcard
+
+### ✅ Enterprise-Ready
+- Alta disponibilidade (preparado para)
+- Monitoramento e observabilidade (planejado)
+- Backup e disaster recovery (planejado)
+- Integração com CI/CD (ArgoCD planejado)
+
+## Estrutura Organizacional (OpenLDAP)
+
+### Usuários
+- **interno** - Equipe de suporte
+- **evertonagilar** - Developer/DevOps
+- **rancher** - Service account
+- **argocd** - Service account
+
+### Grupos
+- developer, devops, support, rh, comercial, dba
+
+## Quer contribuir?
+
+Este é um projeto de POC para demonstração e aprendizado. Contribuições são bem-vindas!
+
+## Licença
+
+Este projeto é fornecido "como está" para fins educacionais e de demonstração.
