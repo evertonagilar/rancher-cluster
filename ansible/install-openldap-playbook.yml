@@ -1,0 +1,9 @@
+---
+# Install OpenLDAP Server
+# This playbook deploys OpenLDAP with TLS support and pre-configured users and groups
+
+- name: Install OpenLDAP Server
+  hosts: all
+  become: true
+  roles:
+    - role: openldap_install

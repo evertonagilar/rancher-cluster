@@ -1,0 +1,94 @@
+replicaCount: 1
+
+image:
+  registry: docker.io
+  repository: bitnami/openldap
+  tag: 2.6.8
+
+auth:
+  adminUsername: {{ ldap_admin_username }}
+  adminPassword: {{ ldap_admin_password }}
+  configPassword: {{ ldap_config_password }}
+
+global:
+  ldapDomain: {{ ldap_domain }}
+  existingSecret: ""
+
+customLdifFiles:
+  01-organizational-units.ldif: |
+    # Organizational Units
+    dn: ou=users,{{ ldap_base_dn }}
+    objectClass: organizationalUnit
+    ou: users
+
+    dn: ou=groups,{{ ldap_base_dn }}
+    objectClass: organizationalUnit
+    ou: groups
+
+    dn: ou=services,{{ ldap_base_dn }}
+    objectClass: organizationalUnit
+    ou: services
+
+  02-groups.ldif: |
+    # Groups
+{% for group in ldap_groups %}
+    dn: cn={{ group.name }},ou=groups,{{ ldap_base_dn }}
+    objectClass: groupOfNames
+    cn: {{ group.name }}
+    description: {{ group.description }}
+    member: cn=placeholder,{{ ldap_base_dn }}
+
+{% endfor %}
+    # Service group for service accounts
+    dn: cn=services,ou=groups,{{ ldap_base_dn }}
+    objectClass: groupOfNames
+    cn: services
+    description: Service Accounts
+    member: cn=placeholder,{{ ldap_base_dn }}
+
+  03-users.ldif: |
+    # Users
+{% for user in ldap_users %}
+    dn: uid={{ user.uid }},ou=users,{{ ldap_base_dn }}
+    objectClass: inetOrgPerson
+    objectClass: posixAccount
+    objectClass: shadowAccount
+    uid: {{ user.uid }}
+    cn: {{ user.cn }}
+    sn: {{ user.sn }}
+    mail: {{ user.mail }}
+{% if user.description is defined %}
+    description: {{ user.description }}
+{% endif %}
+    uidNumber: {{ 10000 + loop.index }}
+    gidNumber: {{ 10000 + loop.index }}
+    homeDirectory: /home/{{ user.uid }}
+    loginShell: /bin/bash
+    userPassword: {SSHA}{{ ldap_default_user_password | password_hash('sha512') | b64encode }}
+
+{% endfor %}
+
+persistence:
+  enabled: {{ ldap_persistence_enabled }}
+  size: {{ ldap_persistence_size }}
+
+resources:
+  requests:
+    memory: {{ ldap_resources_requests_memory }}
+    cpu: {{ ldap_resources_requests_cpu }}
+  limits:
+    memory: {{ ldap_resources_limits_memory }}
+    cpu: {{ ldap_resources_limits_cpu }}
+
+service:
+  type: ClusterIP
+  ports:
+    ldap: 389
+    ldaps: 636
+
+tls:
+  enabled: true
+  existingSecret: {{ ldap_secret_name }}
+  certFilename: tls.crt
+  certKeyFilename: tls.key
+  certCAFilename: ca.crt

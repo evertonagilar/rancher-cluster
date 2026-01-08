@@ -1,0 +1,72 @@
+---
+# OpenLDAP domain configuration
+ldap_namespace: openldap
+ldap_domain: arq.unb.br
+ldap_hostname: ldap.arq.unb.br
+ldap_organization: ARQ UnB
+ldap_base_dn: dc=arq,dc=unb,dc=br
+
+# TLS configuration
+ldap_secret_name: ldap-tls
+cert_file: arq.unb.br.crt
+key_file: arq.unb.br.key
+ca_bundle_file: ca-bundle.pem
+
+# Temporary paths for certificate handling
+temp_cert_path: /tmp/ldap-tls.crt
+temp_key_path: /tmp/ldap-tls.key
+temp_ca_bundle_path: /tmp/ldap-ca-bundle.pem
+
+# Kubeconfig path
+kubeconfig_path: "{{ playbook_dir }}/kubeconfig"
+
+# Organizational Units
+organizational_units:
+  - users
+  - groups
+  - services
+
+# Groups definition
+ldap_groups:
+  - name: developer
+    description: Development Team
+  - name: devops
+    description: DevOps Team
+  - name: support
+    description: Support Team
+  - name: rh
+    description: Human Resources
+  - name: comercial
+    description: Sales Team
+  - name: dba
+    description: Database Administrators
+
+# Users definition
+ldap_users:
+  - uid: interno
+    cn: Usuario Interno
+    sn: Interno
+    mail: interno@arq.unb.br
+    groups:
+      - support
+  - uid: evertonagilar
+    cn: Everton Agilar
+    sn: Agilar
+    mail: evertonagilar@arq.unb.br
+    groups:
+      - developer
+      - devops
+  - uid: rancher
+    cn: Rancher Service Account
+    sn: Service
+    mail: rancher@arq.unb.br
+    description: Service account for Rancher authentication
+    groups:
+      - services
+  - uid: argocd
+    cn: ArgoCD Service Account
+    sn: Service
+    mail: argocd@arq.unb.br
+    description: Service account for ArgoCD authentication
+    groups:
+      - services

@@ -1,0 +1,7 @@
+# TLS Certificates (add manually)
+*.crt
+*.key
+*.pem
+
+# Keep directory structure
+!.gitkeep

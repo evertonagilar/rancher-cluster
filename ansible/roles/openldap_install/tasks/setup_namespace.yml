@@ -1,0 +1,17 @@
+---
+- name: Check if namespace exists
+  ansible.builtin.command:
+    cmd: kubectl -n {{ ldap_namespace }} get namespace {{ ldap_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: namespace_check
+  failed_when: false
+  changed_when: false
+
+- name: Create OpenLDAP namespace
+  ansible.builtin.command:
+    cmd: kubectl create namespace {{ ldap_namespace }}
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  when: namespace_check.rc != 0
+  changed_when: true

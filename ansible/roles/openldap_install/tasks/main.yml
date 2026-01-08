@@ -1,0 +1,12 @@
+---
+- name: Include setup namespace tasks
+  ansible.builtin.import_tasks: setup_namespace.yml
+
+- name: Include setup TLS secret tasks
+  ansible.builtin.import_tasks: setup_tls_secret.yml
+
+- name: Include install OpenLDAP tasks
+  ansible.builtin.import_tasks: install_openldap.yml
+
+- name: Include wait deployment tasks
+  ansible.builtin.import_tasks: wait_deployment.yml

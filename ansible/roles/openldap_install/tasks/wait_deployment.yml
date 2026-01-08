@@ -1,0 +1,19 @@
+---
+- name: Wait for OpenLDAP pods to be ready
+  ansible.builtin.command:
+    cmd: kubectl -n {{ ldap_namespace }} wait --for=condition=Ready pods --all --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  changed_when: false
+
+- name: Get OpenLDAP pod name
+  ansible.builtin.command:
+    cmd: kubectl -n {{ ldap_namespace }} get pods -l app.kubernetes.io/name=openldap -o jsonpath='{.items[0].metadata.name}'
+  environment:
+    KUBECONFIG: "{{ kubeconfig_path }}"
+  register: ldap_pod_name
+  changed_when: false
+
+- name: Display OpenLDAP deployment status
+  ansible.builtin.debug:
+    msg: "OpenLDAP deployed successfully. Pod: {{ ldap_pod_name.stdout }}"

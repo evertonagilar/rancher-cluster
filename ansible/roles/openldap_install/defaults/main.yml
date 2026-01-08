@@ -1,0 +1,29 @@
+---
+# OpenLDAP Helm chart configuration
+openldap_chart_repo: https://charts.helm.sh/stable
+openldap_chart_name: stable/openldap
+openldap_chart_version: ""  # Empty for latest
+
+# Alternative: Use bitnami chart (more actively maintained)
+use_bitnami_chart: true
+bitnami_chart_repo: https://charts.bitnami.com/bitnami
+bitnami_chart_name: openldap
+bitnami_chart_version: "12.2.1"
+
+# Admin credentials
+ldap_admin_username: admin
+ldap_admin_password: "admin"
+ldap_config_password: "admin"
+
+# Default user password (will be hashed)
+ldap_default_user_password: "user"
+
+# Persistence
+ldap_persistence_enabled: true
+ldap_persistence_size: 8Gi
+
+# Resources
+ldap_resources_requests_memory: 256Mi
+ldap_resources_requests_cpu: 250m
+ldap_resources_limits_memory: 512Mi
+ldap_resources_limits_cpu: 500m

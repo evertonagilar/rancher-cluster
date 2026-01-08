@@ -1,6 +1,6 @@
 # Rancher Cluster em K3S 🚀
 
-Este projeto automatiza a criação e configuração de um cluster Kubernetes (K3s) e a instalação do Rancher Server, utilizando uma arquitetura modular baseada em **Ansible Roles**.
+Este diretório contém a configuração para provisionar um cluster Kubernetes (K3s) e a instalação do Rancher Server, utilizando Vagrant e Ansible.
 
 ![Ansible](https://img.shields.io/badge/ansible-%23EE0000.svg?style=for-the-badge&logo=ansible&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
