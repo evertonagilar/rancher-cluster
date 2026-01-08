@@ -1,0 +1,40 @@
+# Terraform Local Environment Configuration
+# 
+# This file contains default values for the local Libvirt environment.
+# You can override these values by creating a terraform.tfvars file.
+
+# Domain configuration
+domain       = "arq.unb.br"
+network_cidr = "192.168.56.0/24"
+
+# SSH keys (add your public keys here)
+# ssh_public_keys = [
+#   "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC... user@host"
+# ]
+
+# Rancher configuration
+rancher_memory = 4096
+rancher_vcpus  = 2
+rancher_ip     = "192.168.56.101"
+
+# Vault configuration
+vault_memory = 4096
+vault_vcpus  = 2
+vault_ip     = "192.168.56.102"
+
+# OpenLDAP configuration
+openldap_memory = 2048
+openldap_vcpus  = 2
+openldap_ip     = "192.168.56.100"
+
+# RKE2 configuration
+rke2_node_count = 3
+rke2_memory     = 4096
+rke2_vcpus      = 2
+rke2_ip_start   = "192.168.56.110"
+
+# Enable/disable components
+enable_rancher  = true
+enable_vault    = true
+enable_openldap = true
+enable_rke2     = true
