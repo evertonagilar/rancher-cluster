@@ -1,4 +1,5 @@
 ---
+# Users to config .kube/config in VM
 target_users:
   - evertonagilar
   - vagrant

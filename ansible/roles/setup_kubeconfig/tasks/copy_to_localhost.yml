@@ -49,6 +49,7 @@
     src: "/tmp/kubeconfig-temp-{{ inventory_hostname }}.yaml"
     dest: "{{ kubeconfig_dest_dir | default(lookup('env', 'PWD')) }}/kubeconfig"
     flat: true
+    overwrite: true
   when:
     - cluster_type != 'none'
     - inventory_hostname == groups['all'][0]

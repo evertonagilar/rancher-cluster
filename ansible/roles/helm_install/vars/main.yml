@@ -1,0 +1,7 @@
+---
+# Helm version to install (e.g., v4.0.4, v3.19.5)
+# Set to empty string to install the latest version
+helm_version: v4.0.4
+
+# Install helm-diff plugin to improve idempotency checks
+install_diff_plugin: true
